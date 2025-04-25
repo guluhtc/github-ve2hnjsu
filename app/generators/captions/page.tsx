@@ -27,6 +27,7 @@ export default function CaptionsPage() {
           'Accept': 'application/json'
         },
         body: JSON.stringify({ prompt }),
+        cache: 'no-store'
       });
 
       if (!response.ok) {

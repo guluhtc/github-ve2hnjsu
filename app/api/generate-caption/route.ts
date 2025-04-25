@@ -17,9 +17,11 @@ const openai = new OpenAI({
   },
 });
 
-export async function POST(req: Request) {
+export const runtime = 'edge';
+
+export async function POST(request: Request) {
   try {
-    const body = await req.json();
+    const body = await request.json();
     const { prompt } = body;
 
     if (!prompt || typeof prompt !== 'string') {
@@ -30,7 +32,12 @@ export async function POST(req: Request) {
         }),
         { 
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+          }
         }
       );
     }
@@ -66,7 +73,12 @@ export async function POST(req: Request) {
         }),
         { 
           status: 500,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+          }
         }
       );
     }
