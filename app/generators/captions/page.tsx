@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { Megaphone, Loader2, Copy, Check, Sparkles } from "lucide-react";
+import { Megaphone, Loader2, Copy, Check, Sparkles, AlertCircle } from "lucide-react";
 import GeneratorToggle from "@/components/generator-toggle";
 
 export default function CaptionsPage() {
@@ -31,13 +31,13 @@ export default function CaptionsPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate caption');
+        throw new Error(data.details || data.error || 'Failed to generate caption');
       }
 
       setGeneratedContent(data.caption);
     } catch (err) {
       console.error("Error generating caption:", err);
-      setError("Failed to generate caption. Please try again.");
+      setError(err instanceof Error ? err.message : "Failed to generate caption. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -122,9 +122,13 @@ export default function CaptionsPage() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-8 p-4 rounded-lg bg-destructive/10 text-destructive"
+                className="mt-8 p-4 rounded-lg bg-destructive/10 text-destructive flex items-start gap-3"
               >
-                {error}
+                <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Error</p>
+                  <p className="text-sm">{error}</p>
+                </div>
               </motion.div>
             )}
 
