@@ -136,18 +136,18 @@ export default function CaptionsPage() {
                   placeholder="E.g., A beautiful sunset at the beach with friends..."
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  className="min-h-[120px] sm:min-h-[150px] text-sm sm:text-base"
+                  className="min-h-[100px] sm:min-h-[150px] text-sm sm:text-base"
                 />
                 <div className="flex justify-end">
                   <Button
                     size="lg"
                     onClick={handleGenerate}
                     disabled={isGenerating || !prompt.trim()}
-                    className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto h-10 sm:h-11"
+                    className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 text-sm sm:text-base"
                   >
                     {isGenerating ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                         Generating...
                       </>
                     ) : (

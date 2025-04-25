@@ -52,20 +52,20 @@ export default function HashtagOptions({ onOptionsChange }: HashtagOptionsProps)
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 p-3 sm:p-4 md:p-6 rounded-lg bg-card/50 backdrop-blur-sm border"
+      className="space-y-3 sm:space-y-4 p-3 sm:p-4 md:p-6 rounded-lg bg-card/50 backdrop-blur-sm border"
     >
-      <div className="space-y-1.5">
-        <Label className="text-sm font-medium">Category</Label>
+      <div className="space-y-1 sm:space-y-1.5">
+        <Label className="text-xs sm:text-sm font-medium">Category</Label>
         <Select
           value={options.category}
           onValueChange={(value) => handleOptionChange("category", value)}
         >
-          <SelectTrigger className="w-full h-9 text-sm">
+          <SelectTrigger className="w-full h-8 sm:h-9 text-xs sm:text-sm" aria-label="Select hashtag category">
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
             {hashtagCategories.map((category) => (
-              <SelectItem key={category.value} value={category.value} className="text-sm">
+              <SelectItem key={category.value} value={category.value} className="text-xs sm:text-sm">
                 {category.label}
               </SelectItem>
             ))}
@@ -73,10 +73,10 @@ export default function HashtagOptions({ onOptionsChange }: HashtagOptionsProps)
         </Select>
       </div>
 
-      <div className="space-y-1.5 pt-2">
+      <div className="space-y-1 sm:space-y-1.5 pt-2">
         <div className="flex items-center justify-between">
-          <Label className="text-sm font-medium">Number of Hashtags</Label>
-          <span className="text-sm text-muted-foreground">{options.count}</span>
+          <Label className="text-xs sm:text-sm font-medium">Number of Hashtags</Label>
+          <span className="text-xs sm:text-sm text-muted-foreground">{options.count}</span>
         </div>
         <Slider
           value={[options.count]}
@@ -88,15 +88,15 @@ export default function HashtagOptions({ onOptionsChange }: HashtagOptionsProps)
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 sm:gap-4 pt-2">
         <div className="flex items-center space-x-2">
           <Switch
             id="trending"
             checked={options.includeTrending}
             onCheckedChange={(checked) => handleOptionChange("includeTrending", checked)}
-            className="h-5 w-9"
+            className="h-4 w-8 sm:h-5 sm:w-9"
           />
-          <Label htmlFor="trending" className="text-sm">Include Trending</Label>
+          <Label htmlFor="trending" className="text-xs sm:text-sm">Include Trending</Label>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -104,9 +104,9 @@ export default function HashtagOptions({ onOptionsChange }: HashtagOptionsProps)
             id="niche"
             checked={options.includeNiche}
             onCheckedChange={(checked) => handleOptionChange("includeNiche", checked)}
-            className="h-5 w-9"
+            className="h-4 w-8 sm:h-5 sm:w-9"
           />
-          <Label htmlFor="niche" className="text-sm">Include Niche</Label>
+          <Label htmlFor="niche" className="text-xs sm:text-sm">Include Niche</Label>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -114,9 +114,9 @@ export default function HashtagOptions({ onOptionsChange }: HashtagOptionsProps)
             id="location"
             checked={options.includeLocation}
             onCheckedChange={(checked) => handleOptionChange("includeLocation", checked)}
-            className="h-5 w-9"
+            className="h-4 w-8 sm:h-5 sm:w-9"
           />
-          <Label htmlFor="location" className="text-sm">Include Location</Label>
+          <Label htmlFor="location" className="text-xs sm:text-sm">Include Location</Label>
         </div>
       </div>
     </motion.div>

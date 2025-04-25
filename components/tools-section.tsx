@@ -158,22 +158,22 @@ export default function ToolsSection() {
   });
 
   return (
-    <section id="tools" className="py-20 tools-gradient">
+    <section id="tools" className="py-12 sm:py-20 tools-gradient">
       <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center text-center mb-12">
+        <div className="flex flex-col items-center text-center mb-8 sm:mb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Badge variant="outline" className="mb-4 gradient-border">
+            <Badge variant="outline" className="mb-3 sm:mb-4 gradient-border">
               Tools
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">
               Discover Our <span className="gradient-text">Instagram AI Tools</span>
             </h2>
-            <p className="text-muted-foreground max-w-[700px]">
+            <p className="text-sm sm:text-base text-muted-foreground max-w-[700px]">
               Browse our collection of free AI-powered tools designed to enhance your Instagram presence.
             </p>
           </motion.div>
@@ -184,31 +184,31 @@ export default function ToolsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="max-w-4xl mx-auto mb-12"
+          className="max-w-4xl mx-auto mb-8 sm:mb-12"
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 sm:gap-4">
             {/* Enhanced Search Box */}
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-blue-500/20 rounded-lg blur-xl group-hover:blur-2xl transition-all duration-300 -z-10" />
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-blue-500/20 group-hover:from-purple-500/30 group-hover:via-pink-500/30 group-hover:to-blue-500/30 transition-all duration-300">
-                  <Search className="h-5 w-5 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 bg-clip-text text-transparent transition-all duration-300 group-hover:scale-110" />
+                <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-blue-500/20 group-hover:from-purple-500/30 group-hover:via-pink-500/30 group-hover:to-blue-500/30 transition-all duration-300">
+                  <Search className="h-4 w-4 sm:h-5 sm:w-5 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 bg-clip-text text-transparent transition-all duration-300 group-hover:scale-110" />
                 </div>
                 <Input
                   type="search"
                   placeholder="Search tools by name or description..."
-                  className="pl-14 pr-12 py-6 text-lg bg-background/80 backdrop-blur-sm border-2 focus:border-primary transition-all duration-300 rounded-lg shadow-lg hover:shadow-xl"
+                  className="pl-11 sm:pl-14 pr-10 sm:pr-12 py-4 sm:py-6 text-base sm:text-lg bg-background/80 backdrop-blur-sm border-2 focus:border-primary transition-all duration-300 rounded-lg shadow-lg hover:shadow-xl"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                   {isSearching && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
                     >
-                      <Loader2 className="h-4 w-4 text-primary animate-spin" />
+                      <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 text-primary animate-spin" />
                     </motion.div>
                   )}
                   {searchQuery && (
@@ -220,8 +220,9 @@ export default function ToolsSection() {
                       className="p-1 rounded-full hover:bg-muted transition-colors"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
+                      aria-label="Clear search"
                     >
-                      <X className="h-4 w-4 text-muted-foreground" />
+                      <X className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                     </motion.button>
                   )}
                 </div>
@@ -234,7 +235,7 @@ export default function ToolsSection() {
                     exit={{ opacity: 0, y: -10 }}
                     className="absolute left-0 right-0 top-full mt-2 p-2 bg-background/80 backdrop-blur-sm border rounded-lg shadow-lg"
                   >
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {filteredTools.length} {filteredTools.length === 1 ? 'result' : 'results'} found
                     </p>
                   </motion.div>
@@ -243,17 +244,18 @@ export default function ToolsSection() {
             </div>
 
             {/* Category Filters */}
-            <div className="flex flex-col gap-4 p-4 rounded-lg bg-background/50 backdrop-blur-sm border gradient-border">
+            <div className="flex flex-col gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-background/50 backdrop-blur-sm border gradient-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Filter className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">Filter by Category</span>
+                  <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  <span className="text-xs sm:text-sm font-medium">Filter by Category</span>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className="md:hidden"
+                  aria-label={isFilterOpen ? "Hide category filters" : "Show category filters"}
                 >
                   {isFilterOpen ? "Hide Filters" : "Show Filters"}
                 </Button>
@@ -268,14 +270,14 @@ export default function ToolsSection() {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {categories.map((category) => (
                         <Button
                           key={category.value}
                           variant={selectedCategory === category.value ? "default" : "outline"}
                           size="sm"
                           onClick={() => setSelectedCategory(category.value)}
-                          className={`relative group transition-all duration-300 ${
+                          className={`relative group transition-all duration-300 text-xs sm:text-sm ${
                             selectedCategory === category.value 
                               ? `bg-gradient-to-r ${category.gradient} text-white hover:opacity-90` 
                               : "gradient-border hover:bg-background/80"
@@ -299,7 +301,7 @@ export default function ToolsSection() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredTools.length > 0 ? (
             filteredTools.map((tool, index) => (
               <motion.div
@@ -313,9 +315,9 @@ export default function ToolsSection() {
               </motion.div>
             ))
           ) : (
-            <div className="col-span-full text-center py-16">
-              <h3 className="text-lg font-medium mb-2">No tools found</h3>
-              <p className="text-muted-foreground">
+            <div className="col-span-full text-center py-12 sm:py-16">
+              <h3 className="text-base sm:text-lg font-medium mb-2">No tools found</h3>
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Try adjusting your search or filter criteria.
               </p>
             </div>
@@ -327,12 +329,13 @@ export default function ToolsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="flex justify-center mt-12"
+          className="flex justify-center mt-8 sm:mt-12"
         >
           <Button
             variant="outline"
             onClick={() => setShowComingSoon(!showComingSoon)}
-            className="gradient-border hover:bg-background/80 transition-colors"
+            className="gradient-border hover:bg-background/80 transition-colors text-sm sm:text-base"
+            aria-label={showComingSoon ? "Hide coming soon tools" : "Show coming soon tools"}
           >
             {showComingSoon ? "Hide Coming Soon" : "Show Coming Soon"} Tools
           </Button>
