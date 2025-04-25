@@ -24,10 +24,8 @@ export default function CaptionsPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
         },
         body: JSON.stringify({ prompt }),
-        cache: 'no-store'
       });
 
       if (!response.ok) {
