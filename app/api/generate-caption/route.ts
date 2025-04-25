@@ -25,11 +25,11 @@ export async function POST(request: Request) {
     const { prompt } = body;
 
     if (!prompt || typeof prompt !== 'string') {
-      return new NextResponse(
-        JSON.stringify({ 
+      return NextResponse.json(
+        { 
           error: "Valid prompt is required",
           details: "Please provide a valid text prompt"
-        }),
+        },
         { 
           status: 400,
           headers: { 
@@ -66,11 +66,11 @@ export async function POST(request: Request) {
 
     if (!caption) {
       console.error('No caption generated in response');
-      return new NextResponse(
-        JSON.stringify({ 
+      return NextResponse.json(
+        { 
           error: "No caption generated",
           details: "The AI model did not generate a caption"
-        }),
+        },
         { 
           status: 500,
           headers: { 
@@ -83,8 +83,8 @@ export async function POST(request: Request) {
       );
     }
 
-    return new NextResponse(
-      JSON.stringify({ caption }),
+    return NextResponse.json(
+      { caption },
       { 
         status: 200,
         headers: { 
@@ -97,11 +97,11 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("Error generating caption:", error);
-    return new NextResponse(
-      JSON.stringify({ 
+    return NextResponse.json(
+      { 
         error: "Failed to generate caption",
         details: error instanceof Error ? error.message : 'Unknown error'
-      }),
+      },
       { 
         status: 500,
         headers: { 
