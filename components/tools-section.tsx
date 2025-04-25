@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ToolCard from "@/components/tool-card";
 import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
 
 // Tool data with gradients
 const toolsData = [
@@ -121,6 +122,18 @@ export default function ToolsSection() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isMobile, setIsMobile] = useState(false);
 
+  // Memoize filtered tools to prevent unnecessary recalculations
+  const filteredTools = React.useMemo(() => {
+    return toolsData.filter(tool => {
+      const matchesSearch = tool.title.toLowerCase().includes(debouncedSearch.toLowerCase()) || 
+                           tool.description.toLowerCase().includes(debouncedSearch.toLowerCase());
+      const matchesCategory = selectedCategory === "all" || tool.category === selectedCategory;
+      const matchesComingSoon = showComingSoon ? true : !tool.comingSoon;
+      
+      return matchesSearch && matchesCategory && matchesComingSoon;
+    });
+  }, [debouncedSearch, selectedCategory, showComingSoon]);
+
   // Handle responsive behavior
   useEffect(() => {
     const checkMobile = () => {
@@ -148,14 +161,17 @@ export default function ToolsSection() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const filteredTools = toolsData.filter(tool => {
-    const matchesSearch = tool.title.toLowerCase().includes(debouncedSearch.toLowerCase()) || 
-                         tool.description.toLowerCase().includes(debouncedSearch.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || tool.category === selectedCategory;
-    const matchesComingSoon = showComingSoon ? true : !tool.comingSoon;
-    
-    return matchesSearch && matchesCategory && matchesComingSoon;
-  });
+  // Handle category selection with animation
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    // Scroll to top of tools section if on mobile
+    if (isMobile) {
+      const toolsSection = document.getElementById('tools');
+      if (toolsSection) {
+        toolsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <section id="tools" className="py-12 sm:py-20 tools-gradient">
@@ -191,8 +207,8 @@ export default function ToolsSection() {
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-blue-500/20 rounded-lg blur-xl group-hover:blur-2xl transition-all duration-300 -z-10" />
               <div className="relative">
-                <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-blue-500/20 group-hover:from-purple-500/30 group-hover:via-pink-500/30 group-hover:to-blue-500/30 transition-all duration-300">
-                  <Search className="h-4 w-4 sm:h-5 sm:w-5 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 bg-clip-text text-transparent transition-all duration-300 group-hover:scale-110" />
+                <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10">
+                  <Search className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
                 <Input
                   type="search"
@@ -200,6 +216,7 @@ export default function ToolsSection() {
                   className="pl-11 sm:pl-14 pr-10 sm:pr-12 py-4 sm:py-6 text-base sm:text-lg bg-background/80 backdrop-blur-sm border-2 focus:border-primary transition-all duration-300 rounded-lg shadow-lg hover:shadow-xl"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search tools"
                 />
                 <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                   {isSearching && (
@@ -207,8 +224,10 @@ export default function ToolsSection() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
+                      className="flex items-center gap-2"
                     >
                       <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 text-primary animate-spin" />
+                      <span className="text-xs sm:text-sm text-muted-foreground">Searching...</span>
                     </motion.div>
                   )}
                   {searchQuery && (
@@ -217,7 +236,7 @@ export default function ToolsSection() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
                       onClick={() => setSearchQuery("")}
-                      className="p-1 rounded-full hover:bg-muted transition-colors"
+                      className="p-1.5 rounded-full hover:bg-muted transition-colors"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       aria-label="Clear search"
@@ -233,11 +252,18 @@ export default function ToolsSection() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute left-0 right-0 top-full mt-2 p-2 bg-background/80 backdrop-blur-sm border rounded-lg shadow-lg"
+                    className="absolute left-0 right-0 top-full mt-2 p-3 bg-background/80 backdrop-blur-sm border rounded-lg shadow-lg"
                   >
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      {filteredTools.length} {filteredTools.length === 1 ? 'result' : 'results'} found
-                    </p>
+                    <div className="flex flex-col gap-2">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        {filteredTools.length} {filteredTools.length === 1 ? 'result' : 'results'} found
+                      </p>
+                      {filteredTools.length === 0 && (
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          Try different keywords or check your spelling
+                        </p>
+                      )}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -276,7 +302,7 @@ export default function ToolsSection() {
                           key={category.value}
                           variant={selectedCategory === category.value ? "default" : "outline"}
                           size="sm"
-                          onClick={() => setSelectedCategory(category.value)}
+                          onClick={() => handleCategorySelect(category.value)}
                           className={`relative group transition-all duration-300 text-xs sm:text-sm ${
                             selectedCategory === category.value 
                               ? `bg-gradient-to-r ${category.gradient} text-white hover:opacity-90` 

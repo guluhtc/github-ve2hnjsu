@@ -81,7 +81,7 @@ export default function HashtagsPage() {
             Hashtag Generator
           </Badge>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">
-            Instagram <span className="gradient-text">Hashtag Generator</span>
+            Instagram <span className="gradient-text">Hashtags Generator</span>
           </h1>
           <p className="text-muted-foreground max-w-[700px] text-base sm:text-lg">
             Generate relevant hashtags for your Instagram posts with AI.

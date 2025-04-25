@@ -9,8 +9,8 @@ import { Toaster } from '@/components/ui/toaster';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'TechIGem - Free Instagram AI Tools',
-  description: 'Access powerful free Instagram AI tools to enhance your social media presence',
+  title: 'Techigem - Free AI Instagram Tools/Generators/Downloaders',
+  description: 'Access powerful free AI tools for Instagram including caption generators, hashtag generators, bio generators, and media downloaders. Enhance your social media presence with our suite of free Instagram tools.',
 };
 
 export default function RootLayout({
@@ -20,6 +20,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>" />
+      </head>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"

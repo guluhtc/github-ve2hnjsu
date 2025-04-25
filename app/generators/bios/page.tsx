@@ -81,7 +81,7 @@ export default function BiosPage() {
             Bio Generator
           </Badge>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">
-            Instagram <span className="gradient-text">Bio Generator</span>
+            Instagram <span className="gradient-text">Bios Generator</span>
           </h1>
           <p className="text-muted-foreground max-w-[700px] text-base sm:text-lg">
             Create engaging bios for your Instagram profile with AI.

@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Megaphone, Loader2, Copy, Check, Sparkles, AlertCircle, Settings } from "lucide-react";
 import GeneratorToggle from "@/components/generator-toggle";
-import CaptionOptions, { CaptionOptions as CaptionOptionsType } from "@/components/caption-options";
+
+// Lazy load the options component
+const CaptionOptions = lazy(() => import("@/components/caption-options"));
 
 export default function CaptionsPage() {
   const [prompt, setPrompt] = useState("");
@@ -16,7 +18,7 @@ export default function CaptionsPage() {
   const [error, setError] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
-  const [options, setOptions] = useState<CaptionOptionsType>({
+  const [options, setOptions] = useState({
     style: "casual",
     tone: "friendly",
     length: 50,
@@ -81,7 +83,7 @@ export default function CaptionsPage() {
             Caption Generator
           </Badge>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">
-            Instagram <span className="gradient-text">Caption Generator</span>
+            Instagram <span className="gradient-text">Captions Generator</span>
           </h1>
           <p className="text-muted-foreground max-w-[700px] text-base sm:text-lg">
             Create engaging captions for your Instagram posts with AI.
@@ -123,7 +125,9 @@ export default function CaptionsPage() {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <CaptionOptions onOptionsChange={setOptions} />
+                    <Suspense fallback={<div className="p-4 text-center">Loading options...</div>}>
+                      <CaptionOptions onOptionsChange={setOptions} />
+                    </Suspense>
                   </motion.div>
                 )}
               </AnimatePresence>

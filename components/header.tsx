@@ -5,23 +5,27 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
+  const handleScroll = useCallback(() => {
+    if (window.scrollY > 10) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  }, []);
 
+  useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen(prev => !prev);
   }, []);
 
   return (
@@ -45,40 +49,27 @@ export default function Header() {
               TechIGem
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
-              <Link 
-                href="/" 
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                Home
-              </Link>
-              <Link 
-                href="#tools" 
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                Tools
-              </Link>
+            <div className="flex items-center gap-6">
               <Link 
                 href="/generators" 
-                className="text-sm font-medium transition-colors hover:text-primary"
+                className="text-sm font-medium transition-colors hover:text-primary hidden md:block"
               >
                 Generators
               </Link>
-            </nav>
-
-            <div className="flex items-center gap-4">
               {/* Mobile menu button */}
               <Button 
                 variant="ghost" 
                 size="icon" 
                 className="md:hidden"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onClick={toggleMenu}
+                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isMenuOpen}
+                aria-controls="mobile-menu"
               >
                 {isMenuOpen ? (
-                  <X className="h-6 w-6" />
+                  <X className="h-6 w-6" aria-hidden="true" />
                 ) : (
-                  <Menu className="h-6 w-6" />
+                  <Menu className="h-6 w-6" aria-hidden="true" />
                 )}
               </Button>
             </div>
@@ -88,25 +79,16 @@ export default function Header() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden mt-2">
-            <nav className="rounded-lg border bg-background/80 backdrop-blur-md shadow-lg p-4 flex flex-col space-y-4">
-              <Link 
-                href="/" 
-                className="text-sm font-medium transition-colors hover:text-primary"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link 
-                href="#tools" 
-                className="text-sm font-medium transition-colors hover:text-primary"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Tools
-              </Link>
+            <nav 
+              id="mobile-menu"
+              className="rounded-lg border bg-background/80 backdrop-blur-md shadow-lg p-4 flex flex-col space-y-4"
+              role="navigation"
+              aria-label="Mobile menu"
+            >
               <Link 
                 href="/generators" 
                 className="text-sm font-medium transition-colors hover:text-primary"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={toggleMenu}
               >
                 Generators
               </Link>
