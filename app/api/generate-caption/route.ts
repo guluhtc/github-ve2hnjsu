@@ -19,16 +19,23 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    const { prompt } = await req.json();
+    const body = await req.json();
+    const { prompt } = body;
 
     if (!prompt || typeof prompt !== 'string') {
-      return NextResponse.json(
-        { error: "Valid prompt is required" },
-        { status: 400 }
+      return new NextResponse(
+        JSON.stringify({ 
+          error: "Valid prompt is required",
+          details: "Please provide a valid text prompt"
+        }),
+        { 
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
       );
     }
 
-    console.log('Generating caption for prompt:', prompt); // Debug log
+    console.log('Generating caption for prompt:', prompt);
 
     const completion = await openai.chat.completions.create({
       model: "meta-llama/llama-3.2-1b-instruct:free",
@@ -46,24 +53,42 @@ export async function POST(req: Request) {
       temperature: 0.7,
     });
 
-    console.log('API Response:', completion); // Debug log
+    console.log('API Response:', completion);
 
     const caption = completion.choices[0]?.message?.content;
 
     if (!caption) {
-      console.error('No caption generated in response'); // Debug log
-      throw new Error('No caption generated');
+      console.error('No caption generated in response');
+      return new NextResponse(
+        JSON.stringify({ 
+          error: "No caption generated",
+          details: "The AI model did not generate a caption"
+        }),
+        { 
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
     }
 
-    return NextResponse.json({ caption });
+    return new NextResponse(
+      JSON.stringify({ caption }),
+      { 
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
   } catch (error) {
     console.error("Error generating caption:", error);
-    return NextResponse.json(
-      { 
+    return new NextResponse(
+      JSON.stringify({ 
         error: "Failed to generate caption",
         details: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
+      }),
+      { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }
     );
   }
 } 

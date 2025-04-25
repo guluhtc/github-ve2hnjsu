@@ -28,10 +28,19 @@ export default function CaptionsPage() {
         body: JSON.stringify({ prompt }),
       });
 
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Invalid response format from server');
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.details || data.error || 'Failed to generate caption');
+      }
+
+      if (!data.caption) {
+        throw new Error('No caption was generated');
       }
 
       setGeneratedContent(data.caption);
