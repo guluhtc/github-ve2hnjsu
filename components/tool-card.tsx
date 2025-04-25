@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { DivideIcon as LucideIcon } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-interface ToolProps {
+interface ToolCardProps {
   tool: {
     id: number;
     title: string;
@@ -21,7 +21,7 @@ interface ToolProps {
   };
 }
 
-export default function ToolCard({ tool }: ToolProps) {
+export default function ToolCard({ tool }: ToolCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const getCategoryLabel = (category: string) => {
@@ -31,83 +31,36 @@ export default function ToolCard({ tool }: ToolProps) {
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
+      className="group relative p-6 rounded-xl bg-background/50 backdrop-blur-sm border overflow-hidden tool-card-gradient"
     >
-      <Card 
-        className={`h-full transition-all duration-500 overflow-hidden gradient-border tool-card-gradient tool-card-hover ${
-          isHovered ? 'shadow-xl shadow-primary/10' : 'shadow-md'
-        }`}
-      >
-        <CardHeader className="relative pb-0">
-          <div className="flex justify-between items-start">
-            <motion.div 
-              className={`rounded-full p-3 transition-all duration-300 bg-gradient-to-br ${tool.gradient} ${
-                isHovered ? 'scale-110' : ''
-              }`}
-              animate={{ rotate: isHovered ? 360 : 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <tool.icon className="h-5 w-5 text-white" />
-            </motion.div>
-            <div className="flex gap-2">
-              {tool.popular && (
-                <Badge 
-                  variant="secondary" 
-                  className={`bg-gradient-to-r ${tool.gradient} text-white`}
-                >
-                  Popular
-                </Badge>
-              )}
-              {tool.comingSoon && (
-                <Badge 
-                  variant="outline" 
-                  className="animate-pulse gradient-border"
-                >
-                  Coming Soon
-                </Badge>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <motion.h3 
-            className="text-lg font-semibold mb-2"
-            animate={{ 
-              color: isHovered ? "hsl(var(--primary))" : "hsl(var(--foreground))" 
-            }}
-            transition={{ duration: 0.3 }}
-          >
-            {tool.title}
-          </motion.h3>
-          <p className="text-muted-foreground text-sm">{tool.description}</p>
-        </CardContent>
-        <CardFooter className="flex justify-between items-center">
-          <Badge 
-            variant="outline" 
-            className={`text-xs bg-gradient-to-r ${tool.gradient} text-white`}
-          >
-            {getCategoryLabel(tool.category)}
-          </Badge>
-          
-          {tool.comingSoon ? (
-            <Button variant="outline" disabled>
-              Coming Soon
-            </Button>
-          ) : (
-            <Button 
-              className={`transition-all duration-300 bg-gradient-to-r ${tool.gradient} hover:opacity-90 text-white ${
-                isHovered ? 'scale-105' : ''
-              }`}
-              asChild
-            >
-              <Link href={`/tools/${tool.id}`}>
-                Use Tool
-              </Link>
-            </Button>
+      <div className={`absolute inset-0 bg-gradient-to-br ${tool.gradient} opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-500`}></div>
+      
+      <div className="relative z-10">
+        <div className={`rounded-full p-3 bg-gradient-to-br ${tool.gradient} mb-4 w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}>
+          <tool.icon className="h-7 w-7 text-white" />
+        </div>
+        
+        <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">
+          {tool.title}
+        </h3>
+        
+        <p className="text-muted-foreground mb-6">
+          {tool.description}
+        </p>
+        
+        <div className="flex items-center gap-2">
+          {tool.popular && (
+            <Badge variant="secondary" className="bg-primary/10 text-primary">
+              Popular
+            </Badge>
           )}
-        </CardFooter>
-      </Card>
+          {tool.comingSoon && (
+            <Badge variant="secondary" className="bg-muted text-muted-foreground">
+              Coming Soon
+            </Badge>
+          )}
+        </div>
+      </div>
     </motion.div>
   );
 }

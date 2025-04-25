@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
+  apiKey: process.env.OPENROUTER_API_KEY || "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",
   defaultHeaders: {
     "HTTP-Referer": "https://techigem.com",
     "X-Title": "TechIGem",
@@ -14,9 +14,9 @@ export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
-    if (!prompt) {
+    if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
-        { error: "Prompt is required" },
+        { error: "Valid prompt is required" },
         { status: 400 }
       );
     }
@@ -37,9 +37,13 @@ export async function POST(req: Request) {
       temperature: 0.7,
     });
 
-    return NextResponse.json({
-      caption: completion.choices[0].message.content
-    });
+    const caption = completion.choices[0]?.message?.content;
+
+    if (!caption) {
+      throw new Error('No caption generated');
+    }
+
+    return NextResponse.json({ caption });
   } catch (error) {
     console.error("Error generating caption:", error);
     return NextResponse.json(
