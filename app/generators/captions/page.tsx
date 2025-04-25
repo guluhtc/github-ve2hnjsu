@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { Megaphone, Loader2, Copy, Check, Sparkles, AlertCircle } from "lucide-react";
+import { Megaphone, Loader2, Copy, Check, Sparkles, AlertCircle, Settings } from "lucide-react";
 import GeneratorToggle from "@/components/generator-toggle";
+import CaptionOptions, { CaptionOptions as CaptionOptionsType } from "@/components/caption-options";
 
 export default function CaptionsPage() {
   const [prompt, setPrompt] = useState("");
@@ -14,6 +15,14 @@ export default function CaptionsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
   const [isCopied, setIsCopied] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [options, setOptions] = useState<CaptionOptionsType>({
+    style: "casual",
+    tone: "friendly",
+    length: 50,
+    includeHashtags: true,
+    includeEmojis: true
+  });
 
   const handleGenerate = async () => {
     try {
@@ -25,7 +34,7 @@ export default function CaptionsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, options }),
       });
 
       if (!response.ok) {
@@ -59,22 +68,22 @@ export default function CaptionsPage() {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-16">
-      <div className="container px-4 md:px-6">
+    <div className="min-h-screen pt-16 sm:pt-20 pb-12 sm:pb-16">
+      <div className="container px-3 sm:px-4 md:px-6">
         <GeneratorToggle />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col items-center text-center mb-12"
+          className="flex flex-col items-center text-center mb-8 sm:mb-12"
         >
-          <Badge variant="outline" className="mb-4 gradient-border">
+          <Badge variant="outline" className="mb-3 sm:mb-4 gradient-border">
             Caption Generator
           </Badge>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">
             Instagram <span className="gradient-text">Caption Generator</span>
           </h1>
-          <p className="text-muted-foreground max-w-[700px] text-lg">
+          <p className="text-muted-foreground max-w-[700px] text-base sm:text-lg">
             Create engaging captions for your Instagram posts with AI.
           </p>
         </motion.div>
@@ -85,30 +94,56 @@ export default function CaptionsPage() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="max-w-2xl mx-auto"
         >
-          <div className="bg-card p-8 rounded-xl border shadow-lg">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-primary/10">
-                  <Megaphone className="h-6 w-6 text-primary" />
+          <div className="bg-card p-3 sm:p-4 md:p-8 rounded-xl border shadow-lg">
+            <div className="space-y-4 sm:space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="p-2 sm:p-2.5 rounded-lg bg-primary/10">
+                    <Megaphone className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold">Create Your Caption</h2>
                 </div>
-                <h2 className="text-xl font-semibold">Create Your Caption</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowOptions(!showOptions)}
+                  className="flex items-center gap-2 w-full sm:w-auto h-9"
+                >
+                  <Settings className="h-4 w-4" />
+                  {showOptions ? "Hide Options" : "Show Options"}
+                </Button>
               </div>
-              <div className="space-y-4">
-                <p className="text-muted-foreground">
+
+              <AnimatePresence>
+                {showOptions && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <CaptionOptions onOptionsChange={setOptions} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="space-y-3 sm:space-y-4">
+                <p className="text-sm sm:text-base text-muted-foreground">
                   Describe your post or provide context for the caption.
                 </p>
                 <Textarea
                   placeholder="E.g., A beautiful sunset at the beach with friends..."
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  className="min-h-[150px] text-base"
+                  className="min-h-[120px] sm:min-h-[150px] text-sm sm:text-base"
                 />
                 <div className="flex justify-end">
                   <Button
                     size="lg"
                     onClick={handleGenerate}
                     disabled={isGenerating || !prompt.trim()}
-                    className="bg-primary hover:bg-primary/90 text-white"
+                    className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto h-10 sm:h-11"
                   >
                     {isGenerating ? (
                       <>
@@ -127,12 +162,12 @@ export default function CaptionsPage() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-8 p-4 rounded-lg bg-destructive/10 text-destructive flex items-start gap-3"
+                className="mt-6 sm:mt-8 p-3 sm:p-4 rounded-lg bg-destructive/10 text-destructive flex items-start gap-2 sm:gap-3"
               >
-                <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium">Error</p>
-                  <p className="text-sm">{error}</p>
+                  <p className="font-medium text-sm sm:text-base">Error</p>
+                  <p className="text-xs sm:text-sm">{error}</p>
                 </div>
               </motion.div>
             )}
@@ -143,15 +178,15 @@ export default function CaptionsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="mt-8"
+                  className="mt-6 sm:mt-8"
                 >
-                  <div className="relative p-6 rounded-lg bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 border border-primary/10">
+                  <div className="relative p-3 sm:p-4 md:p-6 rounded-lg bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 border border-primary/10">
                     <div className="absolute top-0 right-0 p-2">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={handleCopy}
-                        className="hover:bg-primary/10"
+                        className="hover:bg-primary/10 h-8 w-8 p-0"
                       >
                         {isCopied ? (
                           <Check className="h-4 w-4 text-green-500" />
@@ -160,12 +195,12 @@ export default function CaptionsPage() {
                         )}
                       </Button>
                     </div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Sparkles className="h-5 w-5 text-primary" />
-                      <h3 className="font-medium text-lg">Generated Caption</h3>
+                    <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                      <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                      <h3 className="font-medium text-base sm:text-lg">Generated Caption</h3>
                     </div>
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-base leading-relaxed text-foreground/90">
+                      <p className="text-sm sm:text-base leading-relaxed text-foreground/90">
                         {generatedContent.split('\n').map((line, i) => (
                           <span key={i}>
                             {line}
@@ -174,7 +209,7 @@ export default function CaptionsPage() {
                         ))}
                       </p>
                     </div>
-                    <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+                    <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs sm:text-sm text-muted-foreground gap-1 sm:gap-2">
                       <span>Click the copy button to copy to clipboard</span>
                       <span className="text-xs">Powered by AI</span>
                     </div>

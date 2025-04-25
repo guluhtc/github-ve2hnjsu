@@ -19,18 +19,18 @@ const openai = new OpenAI({
 
 export const runtime = 'edge';
 
-interface CaptionOptions {
+interface BioOptions {
   style: string;
   tone: string;
   length: number;
-  includeHashtags: boolean;
   includeEmojis: boolean;
+  includeCallToAction: boolean;
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { prompt, options } = body as { prompt: string; options: CaptionOptions };
+    const { prompt, options } = body as { prompt: string; options: BioOptions };
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
@@ -50,17 +50,17 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log('Generating caption for prompt:', prompt, 'with options:', options);
+    console.log('Generating bio for prompt:', prompt, 'with options:', options);
 
     // Calculate max tokens based on length percentage
     const maxTokens = Math.floor(150 * (options.length / 100));
 
-    const systemPrompt = `You are an expert Instagram caption writer. Create engaging, creative, and relevant captions that will help increase engagement.
+    const systemPrompt = `You are an expert Instagram bio writer. Create engaging, creative, and relevant bios that will help increase profile engagement.
 Style: ${options.style}
 Tone: ${options.tone}
-${options.includeHashtags ? 'Include relevant hashtags at the end.' : ''}
 ${options.includeEmojis ? 'Use appropriate emojis to enhance the message.' : ''}
-Keep the caption length appropriate for Instagram.`;
+${options.includeCallToAction ? 'Include a call to action at the end.' : ''}
+Keep the bio length appropriate for Instagram.`;
 
     const completion = await openai.chat.completions.create({
       model: "meta-llama/llama-3.2-1b-instruct:free",
@@ -71,7 +71,7 @@ Keep the caption length appropriate for Instagram.`;
         },
         {
           role: "user",
-          content: `Generate an engaging Instagram caption for: ${prompt}`
+          content: `Generate an engaging Instagram bio for: ${prompt}`
         }
       ],
       max_tokens: maxTokens,
@@ -80,14 +80,14 @@ Keep the caption length appropriate for Instagram.`;
 
     console.log('API Response:', completion);
 
-    const caption = completion.choices[0]?.message?.content;
+    const bio = completion.choices[0]?.message?.content;
 
-    if (!caption) {
-      console.error('No caption generated in response');
+    if (!bio) {
+      console.error('No bio generated in response');
       return NextResponse.json(
         { 
-          error: "No caption generated",
-          details: "The AI model did not generate a caption"
+          error: "No bio generated",
+          details: "The AI model did not generate a bio"
         },
         { 
           status: 500,
@@ -102,7 +102,7 @@ Keep the caption length appropriate for Instagram.`;
     }
 
     return NextResponse.json(
-      { caption },
+      { bio },
       { 
         status: 200,
         headers: { 
@@ -114,10 +114,10 @@ Keep the caption length appropriate for Instagram.`;
       }
     );
   } catch (error) {
-    console.error("Error generating caption:", error);
+    console.error("Error generating bio:", error);
     return NextResponse.json(
       { 
-        error: "Failed to generate caption",
+        error: "Failed to generate bio",
         details: error instanceof Error ? error.message : 'Unknown error'
       },
       { 

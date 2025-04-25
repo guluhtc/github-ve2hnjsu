@@ -19,18 +19,18 @@ const openai = new OpenAI({
 
 export const runtime = 'edge';
 
-interface CaptionOptions {
-  style: string;
-  tone: string;
-  length: number;
-  includeHashtags: boolean;
-  includeEmojis: boolean;
+interface HashtagOptions {
+  category: string;
+  count: number;
+  includeTrending: boolean;
+  includeNiche: boolean;
+  includeLocation: boolean;
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { prompt, options } = body as { prompt: string; options: CaptionOptions };
+    const { prompt, options } = body as { prompt: string; options: HashtagOptions };
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
@@ -50,17 +50,15 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log('Generating caption for prompt:', prompt, 'with options:', options);
+    console.log('Generating hashtags for prompt:', prompt, 'with options:', options);
 
-    // Calculate max tokens based on length percentage
-    const maxTokens = Math.floor(150 * (options.length / 100));
-
-    const systemPrompt = `You are an expert Instagram caption writer. Create engaging, creative, and relevant captions that will help increase engagement.
-Style: ${options.style}
-Tone: ${options.tone}
-${options.includeHashtags ? 'Include relevant hashtags at the end.' : ''}
-${options.includeEmojis ? 'Use appropriate emojis to enhance the message.' : ''}
-Keep the caption length appropriate for Instagram.`;
+    const systemPrompt = `You are an expert Instagram hashtag generator. Create relevant and engaging hashtags that will help increase post visibility.
+Category: ${options.category}
+Number of hashtags: ${options.count}
+${options.includeTrending ? 'Include trending hashtags.' : ''}
+${options.includeNiche ? 'Include niche-specific hashtags.' : ''}
+${options.includeLocation ? 'Include location-based hashtags.' : ''}
+Format the response as a list of hashtags, one per line.`;
 
     const completion = await openai.chat.completions.create({
       model: "meta-llama/llama-3.2-1b-instruct:free",
@@ -71,23 +69,23 @@ Keep the caption length appropriate for Instagram.`;
         },
         {
           role: "user",
-          content: `Generate an engaging Instagram caption for: ${prompt}`
+          content: `Generate relevant Instagram hashtags for: ${prompt}`
         }
       ],
-      max_tokens: maxTokens,
+      max_tokens: 150,
       temperature: 0.7,
     });
 
     console.log('API Response:', completion);
 
-    const caption = completion.choices[0]?.message?.content;
+    const hashtags = completion.choices[0]?.message?.content;
 
-    if (!caption) {
-      console.error('No caption generated in response');
+    if (!hashtags) {
+      console.error('No hashtags generated in response');
       return NextResponse.json(
         { 
-          error: "No caption generated",
-          details: "The AI model did not generate a caption"
+          error: "No hashtags generated",
+          details: "The AI model did not generate any hashtags"
         },
         { 
           status: 500,
@@ -101,8 +99,15 @@ Keep the caption length appropriate for Instagram.`;
       );
     }
 
+    // Process hashtags into an array
+    const hashtagArray = hashtags
+      .split('\n')
+      .map(tag => tag.trim())
+      .filter(tag => tag.startsWith('#'))
+      .slice(0, options.count);
+
     return NextResponse.json(
-      { caption },
+      { hashtags: hashtagArray },
       { 
         status: 200,
         headers: { 
@@ -114,10 +119,10 @@ Keep the caption length appropriate for Instagram.`;
       }
     );
   } catch (error) {
-    console.error("Error generating caption:", error);
+    console.error("Error generating hashtags:", error);
     return NextResponse.json(
       { 
-        error: "Failed to generate caption",
+        error: "Failed to generate hashtags",
         details: error instanceof Error ? error.message : 'Unknown error'
       },
       { 
