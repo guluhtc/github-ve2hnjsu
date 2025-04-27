@@ -37,7 +37,6 @@
     "@radix-ui/react-toggle": "^1.0.3",
     "@radix-ui/react-toggle-group": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "@types/react": "^18.2.52",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.17",
     "class-variance-authority": "^0.7.0",
@@ -45,7 +44,6 @@
     "cmdk": "^0.2.1",
     "date-fns": "^3.3.1",
     "embla-carousel-react": "^8.0.0",
-    "eslint": "^8.56.0",
     "eslint-config-next": "15.3.0",
     "framer-motion": "^11.0.3",
     "input-otp": "^1.1.0",
@@ -64,19 +62,24 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.3.3",
     "vaul": "^0.9.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^20.17.31",
-    "@types/react": "^18.2.52",
+    "@eslint/config-array": "^0.20.0",
+    "@eslint/object-schema": "^2.1.6",
+    "@types/node": "20.17.31",
+    "@types/react": "18.3.20",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.17",
-    "eslint": "^8.56.0",
+    "domexception": "^4.0.0",
+    "eslint": "^9.25.1",
     "eslint-config-next": "15.3.0",
+    "glob": "^11.0.2",
+    "lru-cache": "^11.1.0",
     "postcss": "^8.4.33",
+    "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
+    "typescript": "5.8.3"
   }
 }
