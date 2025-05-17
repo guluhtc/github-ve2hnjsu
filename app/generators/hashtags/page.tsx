@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Hash, Loader2, Copy, Check, Sparkles, AlertCircle, Settings } from "lucide-react";
 import GeneratorToggle from "@/components/generator-toggle";
 import HashtagOptions, { HashtagOptions as HashtagOptionsType } from "@/components/hashtag-options";
-import { useRouter } from 'next/router';
 
 const articles = [
   {
@@ -35,89 +34,17 @@ Additionally, it is worth considering the VPN's compatibility with gaming platfo
 ];
 
 export default function HashtagsPage() {
-  const router = useRouter();
-  const { slug } = router.query;
-
-  const article = articles.find(a => a.slug === `/${slug}/`);
-
-  if (article) {
-    return (
-      <div className="min-h-screen pt-16 sm:pt-20 pb-12 sm:pb-16">
-        <div className="container px-3 sm:px-4 md:px-6">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">
-            {article.title}
-          </h1>
-          <div className="prose">
-            {article.content}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const [prompt, setPrompt] = useState("");
-  const [generatedContent, setGeneratedContent] = useState<string[]>([]);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState("");
-  const [isCopied, setIsCopied] = useState(false);
-  const [showOptions, setShowOptions] = useState(false);
-  const [options, setOptions] = useState<HashtagOptionsType>({
-    category: "general",
-    count: 15,
-    includeTrending: true,
-    includeNiche: true,
-    includeLocation: false
-  });
-
-  const handleGenerate = async () => {
-    try {
-      setIsGenerating(true);
-      setError("");
-      
-      const response = await fetch('/api/generate-hashtags', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt, options }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.details || errorData.error || `HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (!data.hashtags || !Array.isArray(data.hashtags)) {
-        throw new Error('No hashtags were generated');
-      }
-
-      setGeneratedContent(data.hashtags);
-    } catch (err) {
-      console.error("Error generating hashtags:", err);
-      setError(err instanceof Error ? err.message : "Failed to generate hashtags. Please try again.");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(generatedContent.join(' '));
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy text:", err);
-    }
-  };
+  const article = articles[0]; // Use the first article for static rendering
 
   return (
     <div className="min-h-screen pt-16 sm:pt-20 pb-12 sm:pb-16">
       <div className="container px-3 sm:px-4 md:px-6">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">
-          Article not found
+          {article.title}
         </h1>
+        <div className="prose">
+          {article.content}
+        </div>
       </div>
     </div>
   );
