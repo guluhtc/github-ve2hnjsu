@@ -56,6 +56,12 @@ export default function Header() {
               >
                 Generators
               </Link>
+              <Link 
+                href="/blog" 
+                className="text-sm font-medium transition-colors hover:text-primary hidden md:block"
+              >
+                Blog
+              </Link>
               {/* Mobile menu button */}
               <Button 
                 variant="ghost" 
@@ -91,6 +97,13 @@ export default function Header() {
                 onClick={toggleMenu}
               >
                 Generators
+              </Link>
+              <Link 
+                href="/blog" 
+                className="text-sm font-medium transition-colors hover:text-primary"
+                onClick={toggleMenu}
+              >
+                Blog
               </Link>
             </nav>
           </div>
