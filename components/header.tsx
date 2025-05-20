@@ -11,22 +11,8 @@ import { ModeToggle } from "./mode-toggle";
 import { usePathname } from "next/navigation";
 
 export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-
-  const handleScroll = useCallback(() => {
-    if (window.scrollY > 10) {
-      setIsScrolled(true);
-    } else {
-      setIsScrolled(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
 
   const toggleMenu = useCallback(() => {
     setIsMenuOpen(prev => !prev);
@@ -35,47 +21,41 @@ export default function Header() {
   return (
     <header
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300",
-        isScrolled 
-          ? "py-1 shadow-2xl"
-          : "py-2 shadow-none"
+        "fixed top-0 w-full z-50 transition-all duration-300 py-1 shadow-none"
       )}
       style={{backdropFilter: 'blur(18px)'}}
     >
       <div className="container">
         <div className={cn(
-          "rounded-full border gradient-border transition-all duration-300",
-          "bg-white/40 dark:bg-background/60 backdrop-blur-xl",
-          isScrolled
-            ? "shadow-2xl"
-            : "shadow-lg"
+          "rounded-full border gradient-border transition-all duration-300 bg-white/40 dark:bg-background/60 backdrop-blur-xl shadow-lg"
         )}>
-          <div className="px-3 sm:px-5 flex h-11 sm:h-12 items-center justify-between">
-            <Link href="/" className="text-lg font-extrabold gradient-text tracking-tight select-none" style={{letterSpacing: '0.01em'}}>
+          <div className="px-2 sm:px-3 flex h-9 sm:h-10 items-center justify-between">
+            <Link href="/" className="text-base font-extrabold gradient-text tracking-tight select-none" style={{letterSpacing: '0.01em'}}>
               TechIGem
             </Link>
 
-            <nav className="flex items-center gap-4 sm:gap-6 relative">
+            <nav className="flex items-center gap-2 sm:gap-4 relative">
               {/* Animated active underline */}
               <motion.div
                 layoutId="nav-underline"
-                className="absolute bottom-0 left-0 h-1 w-full pointer-events-none"
+                className="absolute bottom-0 left-0 h-0.5 w-full pointer-events-none"
                 style={{ zIndex: 1 }}
               />
               {[
                 { href: "/generators", label: "Generators" },
-                { href: "/blog", label: "Blog" }
+                { href: "/blog", label: "Blog" },
+                { href: "/names", label: "Stylish Names" }
               ].map((item) => (
                 <motion.div
                   key={item.href}
-                  whileHover={{ scale: 1.08, boxShadow: '0 2px 16px 0 rgba(99,102,241,0.10)' }}
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: 1.05, boxShadow: '0 2px 8px 0 rgba(99,102,241,0.08)' }}
+                  whileTap={{ scale: 0.97 }}
                   className="relative hidden md:block"
                 >
                   <Link
                     href={item.href}
                     className={cn(
-                      "nav-link nav-underline px-4 py-2 transition-all duration-200",
+                      "nav-link nav-underline px-2 py-1 text-xs sm:text-sm font-medium transition-all duration-200",
                       pathname === item.href && "text-primary font-bold"
                     )}
                     tabIndex={0}
@@ -85,7 +65,7 @@ export default function Header() {
                     {pathname === item.href && (
                       <motion.span
                         layoutId="nav-underline-bar"
-                        className="absolute left-0 right-0 bottom-0 h-1 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500"
+                        className="absolute left-0 right-0 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500"
                         style={{ zIndex: 2 }}
                         initial={{ opacity: 0, scaleX: 0 }}
                         animate={{ opacity: 1, scaleX: 1 }}
@@ -96,23 +76,20 @@ export default function Header() {
                   </Link>
                 </motion.div>
               ))}
-              <div className="ml-2">
-                <ModeToggle />
-              </div>
               {/* Mobile menu button */}
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="md:hidden"
+                className="md:hidden p-1"
                 onClick={toggleMenu}
                 aria-label={isMenuOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isMenuOpen}
                 aria-controls="mobile-menu"
               >
                 {isMenuOpen ? (
-                  <X className="h-6 w-6" aria-hidden="true" />
+                  <X className="h-5 w-5" aria-hidden="true" />
                 ) : (
-                  <Menu className="h-6 w-6" aria-hidden="true" />
+                  <Menu className="h-5 w-5" aria-hidden="true" />
                 )}
               </Button>
             </nav>
@@ -137,48 +114,49 @@ export default function Header() {
             {/* Slide-down menu with staggered links */}
             <motion.div
               key="mobile-menu"
-              initial={{ y: -40, opacity: 0 }}
+              initial={{ y: -30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -40, opacity: 0 }}
+              exit={{ y: -30, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="md:hidden mt-2 fixed left-0 right-0 top-14 z-50"
+              className="md:hidden mt-1 fixed left-0 right-0 top-12 z-50"
             >
               <nav 
                 id="mobile-menu"
-                className="rounded-2xl border gradient-border bg-background/95 backdrop-blur-xl shadow-2xl p-6 flex flex-col space-y-4 mx-2 relative"
+                className="rounded-xl border gradient-border bg-background/95 backdrop-blur-xl shadow-2xl p-3 flex flex-col space-y-2 mx-2 relative"
                 role="navigation"
                 aria-label="Mobile menu"
               >
                 <button
-                  className="absolute top-3 right-3 p-2 rounded-full hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="absolute top-2 right-2 p-1 rounded-full hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary"
                   onClick={toggleMenu}
                   aria-label="Close menu"
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5" />
                 </button>
                 <motion.div
                   initial="hidden"
                   animate="visible"
                   variants={{
                     hidden: {},
-                    visible: { transition: { staggerChildren: 0.12 } }
+                    visible: { transition: { staggerChildren: 0.10 } }
                   }}
                 >
                   {[
                     { href: "/generators", label: "Generators" },
-                    { href: "/blog", label: "Blog" }
+                    { href: "/blog", label: "Blog" },
+                    { href: "/names", label: "Stylish Names" }
                   ].map((item) => (
                     <motion.div
                       key={item.href}
                       variants={{
-                        hidden: { opacity: 0, y: 20 },
-                        visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+                        hidden: { opacity: 0, y: 12 },
+                        visible: { opacity: 1, y: 0, transition: { duration: 0.3 } }
                       }}
                     >
                       <Link 
                         href={item.href} 
                         className={cn(
-                          "text-lg font-semibold transition-colors hover:text-primary nav-underline py-2",
+                          "text-base font-semibold transition-colors hover:text-primary nav-underline py-1",
                           pathname === item.href && "text-primary font-bold"
                         )}
                         onClick={toggleMenu}
@@ -188,7 +166,7 @@ export default function Header() {
                         {pathname === item.href && (
                           <motion.span
                             layoutId="mobile-nav-underline-bar"
-                            className="absolute left-0 right-0 bottom-0 h-1 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500"
+                            className="absolute left-0 right-0 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500"
                             style={{ zIndex: 2 }}
                             initial={{ opacity: 0, scaleX: 0 }}
                             animate={{ opacity: 1, scaleX: 1 }}
