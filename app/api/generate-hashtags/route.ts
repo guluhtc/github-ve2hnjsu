@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
+const apiKey = process.env.OPENAI_API_KEY;
+
+if (!apiKey) {
+  throw new Error('API key is required');
+}
+
 const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
-  apiKey: "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",
+  apiKey: apiKey,
   defaultHeaders: {
     "HTTP-Referer": "https://techigem.com",
     "X-Title": "TechIGem Hashtag Generator",

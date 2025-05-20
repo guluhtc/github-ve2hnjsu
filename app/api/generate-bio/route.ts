@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-// Get API key from environment or use fallback
-const apiKey = process.env.OPENAI_API_KEY || "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";
+const apiKey = process.env.OPENAI_API_KEY;
 
 if (!apiKey) {
   throw new Error('API key is required');
