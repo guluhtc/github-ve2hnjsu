@@ -7,7 +7,7 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY!
 );
 
-export async function generateMetadata({ params }: { params: { category: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
   const category = params.category.charAt(0).toUpperCase() + params.category.slice(1);
   const { data } = await supabase
     .from("related_captions")
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: { category: string 
   };
 }
 
-export default async function Page({ params }: { params: { category: string } }) {
+export default async function Page({ params }: any) {
   const category = params.category.charAt(0).toUpperCase() + params.category.slice(1);
   const { data } = await supabase
     .from("related_captions")
@@ -29,5 +29,5 @@ export default async function Page({ params }: { params: { category: string } })
     .eq("category", category)
     .single();
 
-  return <ClientPage categoryData={data} />;
+  return <ClientPage categoryData={data ?? { category, captions: [] }} />;
 } 

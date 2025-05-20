@@ -54,6 +54,12 @@ const styleOptions = [
   { value: "quote", label: "Quote" },
 ];
 
+type GenerationHistoryItem = {
+  prompt: string;
+  captions: string[];
+  timestamp: Date;
+};
+
 export default function CaptionsPage() {
   const [prompt, setPrompt] = useState("");
   const [generatedCaptions, setGeneratedCaptions] = useState<string[]>([]);
@@ -61,10 +67,10 @@ export default function CaptionsPage() {
   const [error, setError] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [generationHistory, setGenerationHistory] = useState([]);
+  const [generationHistory, setGenerationHistory] = useState<GenerationHistoryItem[]>([]);
   const [characterCount, setCharacterCount] = useState(0);
   const [options, setOptions] = useState({
     style: "casual",

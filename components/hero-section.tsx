@@ -135,8 +135,7 @@ export default function HeroSection() {
               backgroundSize: "200% 200%",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              textFillColor: "transparent"
+              backgroundClip: "text"
             }}
           >
             <AnimatePresence mode="wait">
