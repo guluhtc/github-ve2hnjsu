@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
 // Get API key from environment or use fallback
-const apiKey = process.env.OPENAI_API_KEY || "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";
+const apiKey = process.env.OPENAI_API_KEY || "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";
 
 if (!apiKey) {
   throw new Error('API key is required');
@@ -13,7 +13,7 @@ const openai = new OpenAI({
   apiKey: apiKey,
   defaultHeaders: {
     "HTTP-Referer": "https://techigem.com",
-    "X-Title": "TechIGem",
+    "X-Title": "TechIGem Bio Generator",
   },
 });
 
@@ -25,111 +25,43 @@ interface BioOptions {
   length: number;
   includeEmojis: boolean;
   includeCallToAction: boolean;
+  creativity: number;
+  includeHashtags: boolean;
 }
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
-    const { prompt, options } = body as { prompt: string; options: BioOptions };
-
-    if (!prompt || typeof prompt !== 'string') {
-      return NextResponse.json(
-        { 
-          error: "Valid prompt is required",
-          details: "Please provide a valid text prompt"
-        },
-        { 
-          status: 400,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type'
-          }
-        }
-      );
+    const { prompt, options } = await req.json();
+    if (!prompt) {
+      return NextResponse.json({ error: 'Prompt is required.' }, { status: 400 });
     }
-
-    console.log('Generating bio for prompt:', prompt, 'with options:', options);
-
-    // Calculate max tokens based on length percentage
-    const maxTokens = Math.floor(150 * (options.length / 100));
-
-    const systemPrompt = `You are an expert Instagram bio writer. Create engaging, creative, and relevant bios that will help increase profile engagement.
-Style: ${options.style}
-Tone: ${options.tone}
-${options.includeEmojis ? 'Use appropriate emojis to enhance the message.' : ''}
-${options.includeCallToAction ? 'Include a call to action at the end.' : ''}
-Keep the bio length appropriate for Instagram.`;
-
+    let systemPrompt = `Generate 3 unique Instagram bios for: ${prompt}\n`;
+    if (options) {
+      systemPrompt += `Style: ${options.style}. Tone: ${options.tone}. Length: ${options.length} characters. `;
+      systemPrompt += `Creativity: ${options.creativity}. `;
+      if (options.includeHashtags) systemPrompt += `Include hashtags.`;
+      if (options.includeEmojis) systemPrompt += `Include emojis.`;
+    }
+    systemPrompt += "Return each bio on a new line or as a numbered list.";
     const completion = await openai.chat.completions.create({
-      model: "meta-llama/llama-3.2-1b-instruct:free",
+      model: "meta-llama/llama-3.3-8b-instruct:free",
       messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: `Generate an engaging Instagram bio for: ${prompt}`
-        }
+        { role: "system", content: "You are an expert Instagram bio writer." },
+        { role: "user", content: systemPrompt }
       ],
-      max_tokens: maxTokens,
-      temperature: 0.7,
+      max_tokens: 400,
+      temperature: options?.creativity || 0.7,
     });
-
-    console.log('API Response:', completion);
-
-    const bio = completion.choices[0]?.message?.content;
-
-    if (!bio) {
-      console.error('No bio generated in response');
-      return NextResponse.json(
-        { 
-          error: "No bio generated",
-          details: "The AI model did not generate a bio"
-        },
-        { 
-          status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type'
-          }
-        }
-      );
-    }
-
-    return NextResponse.json(
-      { bio },
-      { 
-        status: 200,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type'
-        }
-      }
-    );
+    const raw = completion.choices?.[0]?.message?.content?.trim() || "";
+    let bios = raw
+      .split(/\n+/)
+      .map(line => line.replace(/^\d+\.?\s*/, "").trim())
+      .filter(Boolean);
+    if (bios.length < 3) bios = [raw];
+    return NextResponse.json({ bios });
   } catch (error) {
-    console.error("Error generating bio:", error);
-    return NextResponse.json(
-      { 
-        error: "Failed to generate bio",
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { 
-        status: 500,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type'
-        }
-      }
-    );
+    console.error(error);
+    return NextResponse.json({ error: 'Failed to generate bios.' }, { status: 500 });
   }
 }
 

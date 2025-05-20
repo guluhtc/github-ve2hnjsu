@@ -180,3 +180,66 @@
     hsl(var(--chart-3) / 0.2)
   );
 }
+
+.nav-underline {
+  position: relative;
+  overflow: visible;
+}
+.nav-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--chart-2)), hsl(var(--chart-3)));
+  border-radius: 2px;
+  opacity: 0;
+  transform: scaleX(0);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.nav-underline:hover::after, .nav-underline:focus::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.nav-link {
+  @apply text-xs sm:text-sm font-medium transition-all duration-200 relative px-2 py-1 rounded-lg overflow-hidden;
+}
+.nav-link:hover, .nav-link:focus {
+  @apply text-primary scale-105 bg-accent/30 shadow-md;
+}
+.nav-link .nav-underline::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.blinking-cursor {
+  display: inline-block;
+  width: 1ch;
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes pulse-border {
+  0% {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.5);
+  }
+  50% {
+    border-color: hsl(var(--chart-2));
+    box-shadow: 0 0 16px 4px hsl(var(--chart-2) / 0.4);
+  }
+  100% {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.5);
+  }
+}
+
+.animate-pulse-border {
+  animation: pulse-border 1.2s infinite;
+}

@@ -7,6 +7,8 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 const captionStyles = [
   { value: "casual", label: "Casual & Fun" },
@@ -26,7 +28,7 @@ const tones = [
 ];
 
 interface CaptionOptionsProps {
-  onOptionsChange: (options: CaptionOptions) => void;
+  onOptionsChange: (options: any) => void;
 }
 
 export interface CaptionOptions {
@@ -35,18 +37,24 @@ export interface CaptionOptions {
   length: number;
   includeHashtags: boolean;
   includeEmojis: boolean;
+  maxHashtags: number;
+  creativity: number;
+  customHashtags: string;
 }
 
 export default function CaptionOptions({ onOptionsChange }: CaptionOptionsProps) {
   const [options, setOptions] = useState<CaptionOptions>({
     style: "casual",
     tone: "friendly",
-    length: 50,
+    length: 150,
     includeHashtags: true,
-    includeEmojis: true
+    includeEmojis: true,
+    maxHashtags: 5,
+    creativity: 0.7,
+    customHashtags: "",
   });
 
-  const handleOptionChange = (key: keyof CaptionOptions, value: any) => {
+  const handleOptionChange = (key: string, value: any) => {
     const newOptions = { ...options, [key]: value };
     setOptions(newOptions);
     onOptionsChange(newOptions);
@@ -56,21 +64,21 @@ export default function CaptionOptions({ onOptionsChange }: CaptionOptionsProps)
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 p-3 sm:p-4 md:p-6 rounded-lg bg-card/50 backdrop-blur-sm border"
+      className="space-y-6 p-4 rounded-lg border bg-muted/50"
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        <div className="space-y-1.5">
-          <Label className="text-sm font-medium">Caption Style</Label>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Writing Style</Label>
           <Select
             value={options.style}
             onValueChange={(value) => handleOptionChange("style", value)}
           >
-            <SelectTrigger className="w-full h-9 text-sm">
+            <SelectTrigger>
               <SelectValue placeholder="Select style" />
             </SelectTrigger>
             <SelectContent>
               {captionStyles.map((style) => (
-                <SelectItem key={style.value} value={style.value} className="text-sm">
+                <SelectItem key={style.value} value={style.value}>
                   {style.label}
                 </SelectItem>
               ))}
@@ -78,18 +86,18 @@ export default function CaptionOptions({ onOptionsChange }: CaptionOptionsProps)
           </Select>
         </div>
 
-        <div className="space-y-1.5">
-          <Label className="text-sm font-medium">Tone</Label>
+        <div className="space-y-2">
+          <Label>Tone</Label>
           <Select
             value={options.tone}
             onValueChange={(value) => handleOptionChange("tone", value)}
           >
-            <SelectTrigger className="w-full h-9 text-sm">
+            <SelectTrigger>
               <SelectValue placeholder="Select tone" />
             </SelectTrigger>
             <SelectContent>
               {tones.map((tone) => (
-                <SelectItem key={tone.value} value={tone.value} className="text-sm">
+                <SelectItem key={tone.value} value={tone.value}>
                   {tone.label}
                 </SelectItem>
               ))}
@@ -98,42 +106,115 @@ export default function CaptionOptions({ onOptionsChange }: CaptionOptionsProps)
         </div>
       </div>
 
-      <div className="space-y-1.5 pt-2">
-        <div className="flex items-center justify-between">
-          <Label className="text-sm font-medium">Length</Label>
-          <span className="text-sm text-muted-foreground">{options.length}%</span>
+      <div className="space-y-2">
+        <div className="flex justify-between">
+          <Label>Caption Length (characters)</Label>
+          <span className="text-sm text-muted-foreground">{options.length}</span>
         </div>
         <Slider
           value={[options.length]}
-          onValueChange={(value) => handleOptionChange("length", value[0])}
-          min={20}
+          onValueChange={([value]) => handleOptionChange("length", value)}
+          max={300}
+          min={50}
+          step={10}
+          className="w-full"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex justify-between">
+          <Label>Creativity Level</Label>
+          <span className="text-sm text-muted-foreground">
+            {Math.round(options.creativity * 100)}%
+          </span>
+        </div>
+        <Slider
+          value={[options.creativity * 100]}
+          onValueChange={([value]) =>
+            handleOptionChange("creativity", value / 100)
+          }
           max={100}
           step={10}
           className="w-full"
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-2">
+      <div className="flex flex-wrap gap-6">
         <div className="flex items-center space-x-2">
           <Switch
-            id="hashtags"
             checked={options.includeHashtags}
-            onCheckedChange={(checked) => handleOptionChange("includeHashtags", checked)}
-            className="h-5 w-9"
+            onCheckedChange={(checked) =>
+              handleOptionChange("includeHashtags", checked)
+            }
           />
-          <Label htmlFor="hashtags" className="text-sm">Include Hashtags</Label>
+          <Label>Include Hashtags</Label>
         </div>
 
         <div className="flex items-center space-x-2">
           <Switch
-            id="emojis"
             checked={options.includeEmojis}
-            onCheckedChange={(checked) => handleOptionChange("includeEmojis", checked)}
-            className="h-5 w-9"
+            onCheckedChange={(checked) =>
+              handleOptionChange("includeEmojis", checked)
+            }
           />
-          <Label htmlFor="emojis" className="text-sm">Include Emojis</Label>
+          <Label>Include Emojis</Label>
         </div>
       </div>
+
+      {options.includeHashtags && (
+        <div className="space-y-4 pt-2">
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <Label>Maximum Hashtags</Label>
+              <span className="text-sm text-muted-foreground">
+                {options.maxHashtags}
+              </span>
+            </div>
+            <Slider
+              value={[options.maxHashtags]}
+              onValueChange={([value]) =>
+                handleOptionChange("maxHashtags", value)
+              }
+              max={30}
+              min={1}
+              step={1}
+              className="w-full"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Custom Hashtags (optional)</Label>
+            <Input
+              placeholder="#nature #travel #photography"
+              value={options.customHashtags}
+              onChange={(e) =>
+                handleOptionChange("customHashtags", e.target.value)
+              }
+              className="text-sm"
+            />
+            <p className="text-xs text-muted-foreground">
+              Add your preferred hashtags, separated by spaces
+            </p>
+          </div>
+
+          {options.customHashtags && (
+            <div className="flex flex-wrap gap-2">
+              {options.customHashtags
+                .split(" ")
+                .filter((tag: string) => tag.trim())
+                .map((tag: string, index: number) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="text-xs"
+                  >
+                    {tag.startsWith("#") ? tag : `#${tag}`}
+                  </Badge>
+                ))}
+            </div>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 } 

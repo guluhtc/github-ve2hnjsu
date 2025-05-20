@@ -1,32 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-// Get API key from environment or use fallback
-const apiKey = process.env.OPENAI_API_KEY || "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";
-
-if (!apiKey) {
-  throw new Error('API key is required');
-}
-
 const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
-  apiKey: apiKey,
+  apiKey: "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",
   defaultHeaders: {
-    "HTTP-Referer": "https://techigem.com",
-    "X-Title": "TechIGem Caption Generator",
+    "HTTP-Referer": "https://techigem.com", // Change to your site URL
+    "X-Title": "TechIGem Caption Generator", // Change to your site name
   },
 });
-
-export const runtime = 'edge';
-
-interface CaptionOptions {
-  style: string;
-  tone: string;
-  length: number;
-  includeHashtags: boolean;
-  includeEmojis: boolean;
-  creativity: number;
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,6 +16,8 @@ export async function POST(req: NextRequest) {
     if (!prompt) {
       return NextResponse.json({ error: 'Prompt is required.' }, { status: 400 });
     }
+
+    // Compose a system prompt based on options
     let systemPrompt = `Generate 3 unique Instagram captions for: ${prompt}\n`;
     if (options) {
       systemPrompt += `Style: ${options.style}. Tone: ${options.tone}. Length: ${options.length} characters. `;
@@ -42,6 +26,7 @@ export async function POST(req: NextRequest) {
       if (options.includeEmojis) systemPrompt += `Include emojis.`;
     }
     systemPrompt += "Return each caption on a new line or as a numbered list.";
+
     const completion = await openai.chat.completions.create({
       model: "meta-llama/llama-3.3-8b-instruct:free",
       messages: [
@@ -51,7 +36,9 @@ export async function POST(req: NextRequest) {
       max_tokens: 400,
       temperature: options?.creativity || 0.7,
     });
+
     const raw = completion.choices?.[0]?.message?.content?.trim() || "";
+    // Split into captions (handle numbered or new line list)
     let captions = raw
       .split(/\n+/)
       .map(line => line.replace(/^\d+\.?\s*/, "").trim())
@@ -62,16 +49,4 @@ export async function POST(req: NextRequest) {
     console.error(error);
     return NextResponse.json({ error: 'Failed to generate captions.' }, { status: 500 });
   }
-}
-
-// Handle OPTIONS request for CORS
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    }
-  });
 } 
