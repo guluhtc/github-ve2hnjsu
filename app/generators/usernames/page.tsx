@@ -139,9 +139,9 @@ const usernameStyles = {
 
 export default function UsernameGeneratorPage() {
   const [input, setInput] = useState("");
-  const [type, setType] = useState("classic");
+  const [type, setType] = useState<keyof typeof usernameStyles>("classic");
 
-  function generateUsernames(base: string, type: string) {
+  function generateUsernames(base: string, type: keyof typeof usernameStyles) {
     if (!base) return [];
     const clean = base.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
     return usernameStyles[type].map((fn) => fn(clean));
@@ -163,9 +163,9 @@ export default function UsernameGeneratorPage() {
             {GENERATOR_TYPES.map((g) => (
               <button
                 key={g.key}
-                onClick={() => setType(g.key)}
+                onClick={() => setType(g.key as keyof typeof usernameStyles)}
                 className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-semibold text-xs sm:text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400
-                  ${type === g.key
+                  ${type === g.key as keyof typeof usernameStyles
                     ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow scale-105"
                     : "bg-blue-50 text-blue-700 hover:bg-blue-100"}
                 `}
@@ -215,7 +215,7 @@ export default function UsernameGeneratorPage() {
               <li>Use keywords that reflect your personality or niche.</li>
               <li>Try combining two words or adding a unique twist.</li>
               <li>Check availability on Instagram before finalizing.</li>
-              <li>Use styles or symbols for extra flair, but don't overdo it.</li>
+              <li>Use styles or symbols for extra flair, but don&apos;t overdo it.</li>
             </ul>
           </CardContent>
         </Card>
