@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -68,6 +68,49 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
   });
   const [promptCharCount, setPromptCharCount] = useState(0);
   const [error, setError] = useState("");
+
+  // Related generators state
+  const [related, setRelated] = useState<{ category: string; meta_title: string }[]>([]);
+
+  // Available categories state
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function fetchRelated() {
+      try {
+        const res = await fetch("/api/get-categories");
+        const all = await res.json();
+        // Fetch meta_title for each category except the current one
+        if (Array.isArray(all)) {
+          const filtered = all.filter((cat: string) => cat.toLowerCase() !== categoryName.toLowerCase());
+          // Fetch meta_title for each
+          const metaRes = await fetch("/api/get-related-meta", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ categories: filtered })
+          });
+          const meta = await metaRes.json();
+          setRelated(meta);
+        }
+      } catch (e) {
+        setRelated([]);
+      }
+    }
+    fetchRelated();
+  }, [categoryName]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch("/api/get-categories");
+        const data = await res.json();
+        if (Array.isArray(data)) setCategories(data);
+      } catch (e) {
+        setCategories([]);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   React.useEffect(() => {
     if (!search.trim()) {
@@ -450,11 +493,34 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
             <p className="text-muted-foreground">No captions found for this category.</p>
           )}
         </motion.div>
-        <div className="mt-8 flex justify-center">
-          <Link href="/generators/captions" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border bg-background/70 hover:bg-primary/10 transition-colors font-medium text-sm sm:text-base shadow-sm border-muted-foreground text-foreground">
-            <ArrowLeft className="h-4 w-4" /> Back to Caption Generator
-          </Link>
-        </div>
+        {/* Related Generators Section */}
+        {related.length > 0 && (
+          <div className="mt-12">
+            <h3 className="text-xl font-bold mb-4 text-blue-700">Related Captions Generators</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {related.map((item) => (
+                <Link key={item.category} href={`/generators/captions/${item.category.toLowerCase()}`} className="block p-4 rounded-xl border bg-white shadow hover:shadow-lg transition">
+                  <div className="font-semibold text-blue-700 mb-1">{item.meta_title || item.category}</div>
+                  <div className="text-muted-foreground text-sm">Instagram Captions Generator</div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+        {/* Available Categories Section */}
+        {categories.length > 0 && (
+          <div className="mt-12">
+            <h3 className="text-xl font-bold mb-4 text-purple-700">Available Categories</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {categories.map((cat) => (
+                <Link key={cat} href={`/generators/captions/${cat.toLowerCase()}`} className="block p-4 rounded-xl border bg-white shadow hover:shadow-lg transition">
+                  <div className="font-semibold text-purple-700 mb-1">{cat}</div>
+                  <div className="text-muted-foreground text-sm">Instagram Captions Category</div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -8,13 +8,18 @@ const supabase = createClient(
 );
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const category = params.category.charAt(0).toUpperCase() + params.category.slice(1);
-  const { data } = await supabase
+  const category = params.category.trim().toLowerCase();
+  let { data, error } = await supabase
     .from("related_captions")
     .select("meta_title, meta_description")
-    .eq("category", category)
+    .ilike("category", category)
     .single();
-
+  if (!data) {
+    // Fallback: log all rows for debugging
+    const all = await supabase.from("related_captions").select("category, meta_title, meta_description");
+    console.log('Supabase meta fallback, all rows:', all.data, all.error);
+  }
+  console.log('Supabase meta:', data, error);
   return {
     title: data?.meta_title || "Instagram Captions Generator | TechIGem",
     description: data?.meta_description || "Generate the best Instagram captions for your posts. Free, creative, and unique captions generator by TechIGem."
@@ -22,11 +27,11 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 }
 
 export default async function Page({ params }: any) {
-  const category = params.category.charAt(0).toUpperCase() + params.category.slice(1);
+  const category = params.category.toLowerCase();
   const { data } = await supabase
     .from("related_captions")
     .select("category, captions")
-    .eq("category", category)
+    .ilike("category", category)
     .single();
 
   return <ClientPage categoryData={data ?? { category, captions: [] }} />;
