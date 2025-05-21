@@ -442,30 +442,21 @@ export default function CaptionsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="max-w-3xl mx-auto mt-12"
+          className="max-w-3xl mx-auto mt-12 px-2"
         >
-          <h2 className="text-2xl font-bold mb-6 gradient-text text-center">Available Categories</h2>
-          {loading ? (
-            <div className="flex justify-center">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
-          ) : error ? (
-            <div className="text-center text-destructive">
-              <p>{error}</p>
-            </div>
-          ) : (
-            <div className="flex flex-wrap gap-3 justify-center">
-              {categories.map((category) => (
-                <Link
-                  key={category}
-                  href={`/generators/captions/${category.toLowerCase()}`}
-                  className="px-4 py-2 rounded-full border bg-background/70 hover:bg-primary/10 transition-colors font-medium text-sm shadow-sm border-muted-foreground/50 text-foreground hover:border-primary/50"
-                >
-                  {category}
-                </Link>
-              ))}
-            </div>
-          )}
+          <h2 className="text-xl sm:text-2xl font-bold mb-6 gradient-text text-center">Available Categories</h2>
+          <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
+            {categories.map((category) => (
+              <Link
+                key={category}
+                href={`/generators/captions/${category.toLowerCase()}`}
+                className="px-3 py-2 sm:px-4 sm:py-2 rounded-full border bg-background/70 hover:bg-primary/10 transition-colors font-medium text-xs sm:text-sm shadow-sm border-muted-foreground/50 text-foreground hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/30 active:scale-95"
+                style={{ minWidth: 0 }}
+              >
+                {category.replace(/-/g, ' ')}
+              </Link>
+            ))}
+          </div>
         </motion.div>
       </div>
     </div>

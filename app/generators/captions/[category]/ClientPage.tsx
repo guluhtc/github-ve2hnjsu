@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import GeneratorToggle from "@/components/generator-toggle";
 
 const toneOptions = [
   { value: "professional", label: "Professional" },
@@ -45,7 +46,8 @@ const styleOptions = [
 
 export default function ClientPage({ categoryData }: { categoryData: { category: string, captions: string[] } }) {
   const categoryName = categoryData?.category || "Unknown";
-  const exampleCaptions = categoryData?.captions || [];
+  const displayCategoryName = categoryName.replace(/-/g, ' ');
+  const exampleCaptions = useMemo(() => categoryData?.captions || [], [categoryData]);
 
   const [prompt, setPrompt] = useState("");
   const [generatedCaptions, setGeneratedCaptions] = useState<string[]>([]);
@@ -74,6 +76,7 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
 
   // Available categories state
   const [categories, setCategories] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchRelated() {
@@ -104,9 +107,13 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
       try {
         const res = await fetch("/api/get-categories");
         const data = await res.json();
-        if (Array.isArray(data)) setCategories(data);
+        if (Array.isArray(data)) {
+          setCategories(data);
+          setLoading(false);
+        }
       } catch (e) {
         setCategories([]);
+        setLoading(false);
       }
     }
     fetchCategories();
@@ -177,6 +184,7 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
   return (
     <div className="min-h-screen pt-16 sm:pt-20 pb-12 sm:pb-16 bg-gradient-to-b from-background to-background/80">
       <div className="container px-3 sm:px-4 md:px-6 max-w-2xl mx-auto">
+        <GeneratorToggle />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -184,13 +192,13 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
           className="flex flex-col items-center text-center mb-8 sm:mb-12"
         >
           <Badge variant="outline" className="mb-3 sm:mb-4 gradient-border">
-            {categoryName} Captions Generator
+            {displayCategoryName} Captions Generator
           </Badge>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">
-            {categoryName} <span className="gradient-text">Instagram Captions Generator</span>
+            {displayCategoryName} <span className="gradient-text">Instagram Captions Generator</span>
           </h1>
           <p className="text-muted-foreground max-w-[700px] text-base sm:text-lg">
-            Create and discover the best {categoryName.toLowerCase()} captions for your Instagram posts.
+            Create and discover the best {displayCategoryName.toLowerCase()} captions for your Instagram posts.
           </p>
         </motion.div>
         <motion.div
@@ -204,10 +212,10 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
               <div className="p-2.5 rounded-lg bg-primary/10">
                 <Sparkles className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-xl font-semibold">Generate a {categoryName} Caption</h2>
+              <h2 className="text-xl font-semibold">Generate a {displayCategoryName} Caption</h2>
             </div>
             <Textarea
-              placeholder={`E.g., A cool ${categoryName.toLowerCase()} moment...`}
+              placeholder={`E.g., A cool ${displayCategoryName.toLowerCase()} moment...`}
               value={prompt}
               onChange={(e) => {
                 setPrompt(e.target.value);
@@ -338,7 +346,7 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
                     Generating...
                   </>
                 ) : (
-                  `Generate ${categoryName} Caption`
+                  `Generate ${displayCategoryName} Caption`
                 )}
               </Button>
             </div>
@@ -417,7 +425,7 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
         >
           <div className="flex items-center gap-2 mb-6">
             <Sparkles className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold text-lg text-primary">{categoryName} Captions</h2>
+            <h2 className="font-semibold text-lg text-primary">{displayCategoryName} Captions</h2>
           </div>
           <div className="mb-4 flex items-center gap-2">
             <Search className="h-4 w-4 text-muted-foreground" />
@@ -508,18 +516,35 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
           </div>
         )}
         {/* Available Categories Section */}
-        {categories.length > 0 && (
-          <div className="mt-12">
-            <h3 className="text-xl font-bold mb-4 text-purple-700">Available Categories</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {categories.map((cat) => (
-                <Link key={cat} href={`/generators/captions/${cat.toLowerCase()}`} className="block p-4 rounded-xl border bg-white shadow hover:shadow-lg transition">
-                  <div className="font-semibold text-purple-700 mb-1">{cat}</div>
-                  <div className="text-muted-foreground text-sm">Instagram Captions Category</div>
+        {loading ? (
+          <div className="flex justify-center mt-12">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="text-center text-destructive mt-12">
+            <p>{error}</p>
+          </div>
+        ) : categories.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="max-w-3xl mx-auto mt-12 px-2"
+          >
+            <h2 className="text-xl sm:text-2xl font-bold mb-6 gradient-text text-center">Available Categories</h2>
+            <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
+              {categories.map((category) => (
+                <Link
+                  key={category}
+                  href={`/generators/captions/${category.toLowerCase()}`}
+                  className="px-3 py-2 sm:px-4 sm:py-2 rounded-full border bg-background/70 hover:bg-primary/10 transition-colors font-medium text-xs sm:text-sm shadow-sm border-muted-foreground/50 text-foreground hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/30 active:scale-95"
+                  style={{ minWidth: 0 }}
+                >
+                  {category.replace(/-/g, ' ')}
                 </Link>
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

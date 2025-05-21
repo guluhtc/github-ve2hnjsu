@@ -1,18 +1,20 @@
 import { Metadata } from "next";
 import ClientPage from "./ClientPage";
 import { createClient } from "@supabase/supabase-js";
+import { useMemo } from "react";
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_ANON_KEY!
 );
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const category = params.category.trim().toLowerCase();
+export async function generateMetadata({ params }: { params: Promise<{ category: string }> }): Promise<Metadata> {
+  const { category } = await params;
+  const cat = category.trim().toLowerCase();
   let { data, error } = await supabase
     .from("related_captions")
     .select("meta_title, meta_description")
-    .ilike("category", category)
+    .ilike("category", cat)
     .single();
   if (!data) {
     // Fallback: log all rows for debugging
@@ -26,13 +28,17 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   };
 }
 
-export default async function Page({ params }: any) {
-  const category = params.category.toLowerCase();
+export default async function Page({ params }: { params: Promise<{ category: string }> }) {
+  const { category } = await params;
+  const cat = category.toLowerCase();
   const { data } = await supabase
     .from("related_captions")
     .select("category, captions")
-    .ilike("category", category)
+    .ilike("category", cat)
     .single();
 
-  return <ClientPage categoryData={data ?? { category, captions: [] }} />;
+  // Memoize fallback value to avoid infinite re-renders
+  const stableData = data ?? { category: cat, captions: [] };
+
+  return <ClientPage categoryData={stableData} />;
 } 

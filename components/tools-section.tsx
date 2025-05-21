@@ -12,7 +12,8 @@ import {
   Sparkles,
   Megaphone,
   X,
-  Loader2
+  Loader2,
+  FolderKanban
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -102,6 +103,28 @@ const toolsData = [
     popular: false,
     comingSoon: true,
     gradient: "from-cyan-500 to-blue-500"
+  },
+  {
+    id: 100,
+    title: "Generators Tools",
+    description: "Access all our Instagram AI generators: captions, bios, hashtags, usernames, and more.",
+    icon: FolderKanban,
+    category: "generators",
+    popular: true,
+    comingSoon: false,
+    gradient: "from-fuchsia-500 to-purple-500",
+    href: "/generators"
+  },
+  {
+    id: 101,
+    title: "Stylish Name Generator",
+    description: "Create stylish, fancy, and unique names for your Instagram profile instantly.",
+    icon: Sparkles,
+    category: "generators",
+    popular: true,
+    comingSoon: false,
+    gradient: "from-purple-500 to-blue-500",
+    href: "/names"
   }
 ];
 
