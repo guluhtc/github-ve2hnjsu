@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='white'/%3E%3Ctext x='28' y='75' font-size='60' font-family='Arial,sans-serif' font-weight='bold' fill='%234285F4'%3ET%3C/text%3E%3Ctext x='62' y='75' font-size='60' font-family='Arial,sans-serif' font-weight='bold' fill='%23EA4335'%3EG%3C/text%3E%3C/svg%3E" />
+        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='32' y='72' font-size='60' font-family='Arial,sans-serif' font-weight='bold' fill='%234285F4'%3ET%3C/text%3E%3Ctext x='60' y='72' font-size='60' font-family='Arial,sans-serif' font-weight='bold' fill='%23EA4335'%3EG%3C/text%3E%3C/svg%3E" />
       </head>
       <body className={inter.className}>
         <ThemeProvider
