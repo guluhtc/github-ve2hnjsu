@@ -78,6 +78,10 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [visibleCount, setVisibleCount] = useState(35);
+  const [visibleRelated, setVisibleRelated] = useState(35);
+  const [visibleCategories, setVisibleCategories] = useState(35);
+
   useEffect(() => {
     async function fetchRelated() {
       try {
@@ -119,7 +123,14 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
     fetchCategories();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    setFilteredCaptions(exampleCaptions);
+    setVisibleCount(35);
+    setVisibleRelated(35);
+    setVisibleCategories(35);
+  }, [exampleCaptions]);
+
+  useEffect(() => {
     if (!search.trim()) {
       setFilteredCaptions(exampleCaptions);
     } else {
@@ -439,7 +450,7 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
           </div>
           {filteredCaptions.length > 0 ? (
             <div className="grid gap-4">
-              {filteredCaptions.map((caption, i) => (
+              {filteredCaptions.slice(0, visibleCount).map((caption, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 10 }}
@@ -496,6 +507,16 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
                   </div>
                 </motion.div>
               ))}
+              {visibleCount < filteredCaptions.length && (
+                <div className="flex justify-center mt-4">
+                  <Button
+                    onClick={() => setVisibleCount((prev) => prev + 35)}
+                    className="bg-primary hover:bg-primary/90 text-white px-8"
+                  >
+                    Load More
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-muted-foreground">No captions found for this category.</p>
@@ -506,13 +527,23 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
           <div className="mt-12">
             <h3 className="text-xl font-bold mb-4 text-blue-700">Related Captions Generators</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {related.map((item) => (
+              {related.slice(0, visibleRelated).map((item) => (
                 <Link key={item.category} href={`/generators/captions/${item.category.toLowerCase()}`} className="block p-4 rounded-xl border bg-white shadow hover:shadow-lg transition">
                   <div className="font-semibold text-blue-700 mb-1">{item.meta_title || item.category}</div>
                   <div className="text-muted-foreground text-sm">Instagram Captions Generator</div>
                 </Link>
               ))}
             </div>
+            {visibleRelated < related.length && (
+              <div className="flex justify-center mt-4">
+                <Button
+                  onClick={() => setVisibleRelated((prev) => prev + 35)}
+                  className="bg-primary hover:bg-primary/90 text-white px-8"
+                >
+                  Load More
+                </Button>
+              </div>
+            )}
           </div>
         )}
         {/* Available Categories Section */}
@@ -531,9 +562,9 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
             transition={{ duration: 0.5, delay: 0.3 }}
             className="max-w-3xl mx-auto mt-12 px-2"
           >
-            <h2 className="text-xl sm:text-2xl font-bold mb-6 gradient-text text-center">Available Categories</h2>
+            <h2 className="text-xl sm:text-2xl font-bold mb-6 gradient-text text-center">Related Captions Generators</h2>
             <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
-              {categories.map((category) => (
+              {categories.slice(0, visibleCategories).map((category) => (
                 <Link
                   key={category}
                   href={`/generators/captions/${category.toLowerCase()}`}
@@ -544,6 +575,16 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
                 </Link>
               ))}
             </div>
+            {visibleCategories < categories.length && (
+              <div className="flex justify-center mt-4">
+                <Button
+                  onClick={() => setVisibleCategories((prev) => prev + 35)}
+                  className="bg-primary hover:bg-primary/90 text-white px-8"
+                >
+                  Load More
+                </Button>
+              </div>
+            )}
           </motion.div>
         )}
       </div>

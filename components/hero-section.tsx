@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Instagram, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, Instagram, Sparkles, Zap, Brain } from "lucide-react";
 
 const typewriterPhrases = [
   "AI Magic",
@@ -126,9 +126,16 @@ export default function HeroSection() {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 sm:mb-6 leading-tight"
         >
-          Instagram with
           <motion.span
-            className="gradient-text ml-2 relative inline-block"
+            initial={{ rotate: 0 }}
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+            className="inline-block align-middle mr-3"
+          >
+            <Brain className="w-10 h-10 text-primary drop-shadow-lg" />
+          </motion.span>
+          <motion.span
+            className="gradient-text relative inline-block"
             variants={shimmerVariants}
             animate="animate"
             style={{

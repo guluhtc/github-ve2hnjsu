@@ -81,6 +81,8 @@ export default function CaptionsPage() {
     maxHashtags: 5,
     creativity: 0.7,
   });
+  const [visibleCount, setVisibleCount] = useState(35);
+  const [visibleCategories, setVisibleCategories] = useState(35);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -110,6 +112,8 @@ export default function CaptionsPage() {
 
   useEffect(() => {
     setCharacterCount(generatedCaptions.join('').length);
+    setVisibleCount(35);
+    setVisibleCategories(35);
   }, [generatedCaptions]);
 
   const handleGenerate = async () => {
@@ -381,14 +385,19 @@ export default function CaptionsPage() {
 
               {/* Generated Content */}
               <AnimatePresence>
-                {generatedCaptions.length > 0 && (
+                {isGenerating && (
+                  <div className="flex justify-center my-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                )}
+                {generatedCaptions.length > 0 && !isGenerating && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     className="mt-6 grid gap-4"
                   >
-                    {generatedCaptions.map((caption, idx) => (
+                    {generatedCaptions.slice(0, visibleCount).map((caption, idx) => (
                       <div
                         key={idx}
                         className="relative p-6 rounded-lg bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 border border-primary/10"
@@ -430,6 +439,24 @@ export default function CaptionsPage() {
                         </div>
                       </div>
                     ))}
+                    {visibleCount < generatedCaptions.length && (
+                      <div className="flex justify-center mt-4">
+                        <Button
+                          onClick={() => setVisibleCount((prev) => prev + 35)}
+                          disabled={isGenerating}
+                          className="bg-primary hover:bg-primary/90 text-white px-8"
+                        >
+                          {isGenerating ? (
+                            <>
+                              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                              Loading...
+                            </>
+                          ) : (
+                            "Load More"
+                          )}
+                        </Button>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -444,9 +471,9 @@ export default function CaptionsPage() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="max-w-3xl mx-auto mt-12 px-2"
         >
-          <h2 className="text-xl sm:text-2xl font-bold mb-6 gradient-text text-center">Available Categories</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-6 gradient-text text-center">Related Captions Generators</h2>
           <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
-            {categories.map((category) => (
+            {categories.slice(0, visibleCategories).map((category) => (
               <Link
                 key={category}
                 href={`/generators/captions/${category.toLowerCase()}`}
@@ -457,6 +484,16 @@ export default function CaptionsPage() {
               </Link>
             ))}
           </div>
+          {visibleCategories < categories.length && (
+            <div className="flex justify-center mt-4">
+              <Button
+                onClick={() => setVisibleCategories((prev) => prev + 35)}
+                className="bg-primary hover:bg-primary/90 text-white px-8"
+              >
+                Load More
+              </Button>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

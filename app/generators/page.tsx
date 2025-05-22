@@ -55,9 +55,11 @@ export default function GeneratorsPage() {
           className="flex flex-col items-center text-center mb-12"
         >
           <Badge variant="outline" className="mb-4 gradient-border text-blue-700 border-blue-200 bg-blue-50 text-base">AI Generators</Badge>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4 gradient-text">Instagram Content Generators</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4 gradient-text">
+            to Generate Content Generators
+          </h1>
           <p className="text-muted-foreground max-w-2xl text-lg mb-8">
-            Choose from our collection of AI-powered Instagram content generators. Instantly create captions, bios, hashtags, usernames, and more for your social media success.
+            Choose from our collection of AI-powered tools to Generate content. Instantly create captions, bios, hashtags, usernames, and more for your social media success.
           </p>
         </motion.div>
         <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-7 md:gap-8 max-w-5xl mx-auto w-full px-1 sm:px-0">
