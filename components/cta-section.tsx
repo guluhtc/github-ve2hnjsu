@@ -26,13 +26,13 @@ export default function CTASection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-center"
+            className="text-center mb-4"
           >
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">
               Ready to Transform Your <span className="gradient-text">Instagram</span>?
             </h2>
-            <p className="text-muted-foreground mb-8 text-lg">
-              Start using our free AI tools today and see the difference in your Instagram engagement and growth.
+            <p className="text-muted-foreground mb-8 text-xl font-medium">
+              Start using our free AI tools today and watch your engagement and growth skyrocket.
             </p>
           </motion.div>
           

@@ -59,7 +59,7 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="py-24 features-gradient">
+    <section id="features" className="py-28 features-gradient bg-background/80">
       <div className="container px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -71,11 +71,11 @@ export default function FeaturesSection() {
           <Badge variant="outline" className="mb-4 gradient-border">
             Features
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">
             Why Choose <span className="gradient-text">TechIGem Tools</span>?
           </h2>
-          <p className="text-muted-foreground max-w-[700px] text-lg">
-            Experience the perfect blend of powerful features and user-friendly design to elevate your Instagram presence.
+          <p className="text-muted-foreground max-w-[700px] text-lg mb-2">
+            Discover the unique advantages that set our platform apart and help you grow faster on Instagram.
           </p>
         </motion.div>
 

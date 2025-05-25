@@ -18,7 +18,18 @@ import {
   Hash,
   Clock,
   Settings,
-  Info
+  Info,
+  ChevronDown,
+  HelpCircle,
+  UserCheck,
+  Star,
+  Globe,
+  Lock,
+  Globe2,
+  Image as ImageIcon,
+  Video,
+  Film,
+  BookMarked
 } from "lucide-react";
 import Link from "next/link";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -67,6 +78,8 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
     maxHashtags: 5,
     creativity: 0.7,
     customHashtags: "",
+    language: "en",
+    postType: "photo",
   });
   const [promptCharCount, setPromptCharCount] = useState(0);
   const [error, setError] = useState("");
@@ -192,6 +205,51 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
     );
   };
 
+  // Memoized steps and faqs for performance
+  const howToSteps = [
+    {
+      icon: <Sparkles className="h-8 w-8 text-primary mb-2" />, title: "Pick a Caption", desc: "Browse the best captions for your post or use the search.",
+    },
+    {
+      icon: <Copy className="h-8 w-8 text-primary mb-2" />, title: "Copy or Favorite", desc: "Copy your favorite or save it for later use.",
+    },
+    {
+      icon: <Settings className="h-8 w-8 text-primary mb-2" />, title: "Generate Custom", desc: "Use the advanced generator for a unique caption.",
+    }
+  ];
+  const faqs = [
+    {
+      q: "Is this captions generator free?",
+      a: "Yes! All features are free to use for everyone.",
+      icon: <HelpCircle className="h-7 w-7 text-primary" />
+    },
+    {
+      q: "Can I generate captions for any category?",
+      a: "Absolutely. You can browse or generate captions for any category listed.",
+      icon: <Globe className="h-7 w-7 text-primary" />
+    },
+    {
+      q: "How do I get the best results?",
+      a: "Describe your post in detail and use the advanced options for more tailored captions.",
+      icon: <Star className="h-7 w-7 text-primary" />
+    },
+    {
+      q: "Do I need to sign up?",
+      a: "No sign up is required. Just use and enjoy!",
+      icon: <UserCheck className="h-7 w-7 text-primary" />
+    },
+    {
+      q: "Are my captions private?",
+      a: "Yes, everything you generate is private and not stored or shared.",
+      icon: <Lock className="h-7 w-7 text-primary" />
+    },
+    {
+      q: "Can I use these captions for commercial accounts?",
+      a: "Yes, you can use generated captions for personal or business/brand accounts.",
+      icon: <Globe className="h-7 w-7 text-primary" />
+    }
+  ];
+
   return (
     <div className="min-h-screen pt-16 sm:pt-20 pb-12 sm:pb-16 bg-gradient-to-b from-background to-background/80">
       <div className="container px-3 sm:px-4 md:px-6 max-w-2xl mx-auto">
@@ -203,231 +261,294 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
           className="flex flex-col items-center text-center mb-8 sm:mb-12"
         >
           <Badge variant="outline" className="mb-3 sm:mb-4 gradient-border">
-            {displayCategoryName} Captions Generator
+            {displayCategoryName} Captions
           </Badge>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">
-            {displayCategoryName} <span className="gradient-text">Instagram Captions Generator</span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4 gradient-text">
+            {displayCategoryName.charAt(0).toUpperCase() + displayCategoryName.slice(1)} Instagram Captions
           </h1>
           <p className="text-muted-foreground max-w-[700px] text-base sm:text-lg">
-            Create and discover the best {displayCategoryName.toLowerCase()} captions for your Instagram posts.
+            Discover the best {displayCategoryName} captions for your Instagram posts. Copy, favorite, or generate your own!
           </p>
         </motion.div>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-card p-6 rounded-xl border shadow-lg backdrop-blur-sm bg-background/95 mb-10"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.07 } }
+          }}
+          className="grid gap-4 mb-10"
         >
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2.5 rounded-lg bg-primary/10">
-                <Sparkles className="h-6 w-6 text-primary" />
+          {filteredCaptions.slice(0, visibleCount).map((caption, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: idx * 0.07 }}
+              className={`relative p-5 rounded-xl bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 border border-primary/10 shadow-sm hover:shadow-lg transition-shadow duration-300 ${favorites.includes(idx) ? 'ring-2 ring-primary/60' : ''}`}
+            >
+              <div className="absolute top-4 right-4 flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleCopy(caption, idx)}
+                  className="h-8 w-8 p-0"
+                  aria-label="Copy caption"
+                >
+                  {copiedIndex === idx ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-primary" />}
+                </Button>
+                <Button
+                  variant={favorites.includes(idx) ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => toggleFavorite(idx)}
+                  className="h-8 w-8 p-0"
+                  aria-label={favorites.includes(idx) ? "Remove from favorites" : "Add to favorites"}
+                >
+                  {favorites.includes(idx) ? <Heart className="h-4 w-4 text-pink-500" /> : <HeartOff className="h-4 w-4 text-muted-foreground" />}
+                </Button>
               </div>
-              <h2 className="text-xl font-semibold">Generate a {displayCategoryName} Caption</h2>
-            </div>
-            <Textarea
-              placeholder={`E.g., A cool ${displayCategoryName.toLowerCase()} moment...`}
-              value={prompt}
-              onChange={(e) => {
-                setPrompt(e.target.value);
-                setPromptCharCount(e.target.value.length);
-              }}
-              className="min-h-[120px] text-base resize-none border focus:ring-2 focus:ring-primary/30"
-            />
-            <div className="flex justify-between items-center mt-1 mb-2 text-xs text-muted-foreground">
-              <span>{promptCharCount} / 300 characters</span>
-              <span>Describe your post for best results</span>
-            </div>
-            <div className="flex items-center gap-2 justify-end mb-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowOptions(!showOptions)}
-                className="flex items-center gap-2"
-              >
-                <Settings className="h-4 w-4" />
-                {showOptions ? "Hide Options" : "Show Options"}
-              </Button>
-            </div>
-            <AnimatePresence>
-              {showOptions && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-6 p-4 rounded-xl border bg-muted/50 mb-4 shadow-sm"
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label>Writing Style</Label>
-                      <Select
-                        value={options.style}
-                        onValueChange={(value) => setOptions((prev) => ({ ...prev, style: value }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select style" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {styleOptions.map((style) => (
-                            <SelectItem key={style.value} value={style.value}>
-                              {style.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="h-3 w-3" />Choose the overall writing style</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tone</Label>
-                      <Select
-                        value={options.tone}
-                        onValueChange={(value) => setOptions((prev) => ({ ...prev, tone: value }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select tone" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {toneOptions.map((tone) => (
-                            <SelectItem key={tone.value} value={tone.value}>
-                              {tone.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="h-3 w-3" />Set the mood of your caption</p>
-                    </div>
-                    <div className="space-y-2 col-span-1 sm:col-span-2">
-                      <div className="flex justify-between">
-                        <Label>Caption Length</Label>
-                        <span className="text-xs text-muted-foreground">{options.length} characters</span>
-                      </div>
-                      <Slider
-                        value={[options.length]}
-                        onValueChange={([value]) => setOptions((prev) => ({ ...prev, length: value }))}
-                        max={300}
-                        min={50}
-                        step={10}
-                        className="w-full"
-                      />
-                      <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="h-3 w-3" />Controls the maximum length of the generated caption</p>
-                    </div>
-                    <div className="space-y-2 col-span-1 sm:col-span-2">
-                      <div className="flex justify-between">
-                        <Label>Creativity Level</Label>
-                        <span className="text-xs text-muted-foreground">{Math.round(options.creativity * 100)}%</span>
-                      </div>
-                      <Slider
-                        value={[options.creativity * 100]}
-                        onValueChange={([value]) => setOptions((prev) => ({ ...prev, creativity: value / 100 }))}
-                        max={100}
-                        step={10}
-                        className="w-full"
-                      />
-                      <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="h-3 w-3" />Higher creativity = more unique captions</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={options.includeHashtags}
-                        onCheckedChange={(checked) => setOptions((prev) => ({ ...prev, includeHashtags: checked }))}
-                      />
-                      <Label>Include Hashtags</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={options.includeEmojis}
-                        onCheckedChange={(checked) => setOptions((prev) => ({ ...prev, includeEmojis: checked }))}
-                      />
-                      <Label>Include Emojis</Label>
-                    </div>
-                  </div>
-                </motion.div>
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <h3 className="font-medium text-lg">Caption {idx + 1}</h3>
+              </div>
+              <div className="prose prose-sm max-w-none">
+                <p className="text-base leading-relaxed text-foreground/90">
+                  {caption.split('\n').map((line, i) => (
+                    <span key={i}>{line}<br /></span>
+                  ))}
+                </p>
+              </div>
+              {caption.match(/#[\w]+/g) && (
+                <div className="flex items-center gap-2 mt-2">
+                  <Hash className="h-4 w-4 text-primary" />
+                  <span className="text-sm text-muted-foreground truncate max-w-xs">
+                    {caption.match(/#[\w]+/g)?.join(' ')}
+                  </span>
+                </div>
               )}
-            </AnimatePresence>
-            <div className="flex justify-end">
-              <Button
-                size="lg"
-                onClick={handleGenerate}
-                disabled={isGenerating || !prompt.trim()}
-                className="bg-primary hover:bg-primary/90 text-white px-8"
+              <div className="flex items-center justify-between text-sm text-muted-foreground pt-4 border-t mt-4">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  <span>{caption.length} characters</span>
+                </div>
+                <span>Category: {displayCategoryName}</span>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+        {/* Advanced Generator Section */}
+        <section className="bg-background/80 rounded-xl border shadow-lg p-6 mb-10">
+          <h2 className="text-xl font-bold mb-2 flex items-center gap-2"><Settings className="h-5 w-5 text-primary" /> Advanced Caption Generator</h2>
+          <p className="text-muted-foreground mb-4">Generate custom captions for this category with advanced options.</p>
+          {/* Example Prompts */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {[`A fun day at the beach with friends`, `Delicious homemade pizza night`, `Exploring a new city`, `My morning workout routine`, `A cozy rainy day indoors`].map((ex, i) => (
+              <button
+                key={i}
+                className="px-3 py-1 rounded-full bg-muted/60 hover:bg-primary/10 text-sm text-muted-foreground border border-muted-foreground/20 transition-colors"
+                onClick={() => setPrompt(ex)}
+                type="button"
               >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  `Generate ${displayCategoryName} Caption`
-                )}
+                {ex}
+              </button>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <Label>Language</Label>
+              <Select value={options.language || "en"} onValueChange={v => setOptions(o => ({ ...o, language: v }))}>
+                <SelectTrigger><SelectValue placeholder="Select language" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="es">Spanish</SelectItem>
+                  <SelectItem value="fr">French</SelectItem>
+                  <SelectItem value="de">German</SelectItem>
+                  <SelectItem value="hi">Hindi</SelectItem>
+                  <SelectItem value="ar">Arabic</SelectItem>
+                  <SelectItem value="zh">Chinese</SelectItem>
+                  <SelectItem value="pt">Portuguese</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Post Type</Label>
+              <Select value={options.postType || "photo"} onValueChange={v => setOptions(o => ({ ...o, postType: v }))}>
+                <SelectTrigger><SelectValue placeholder="Select post type" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="photo"><ImageIcon className="inline h-4 w-4 mr-1" />Photo</SelectItem>
+                  <SelectItem value="video"><Video className="inline h-4 w-4 mr-1" />Video</SelectItem>
+                  <SelectItem value="reel"><Film className="inline h-4 w-4 mr-1" />Reel</SelectItem>
+                  <SelectItem value="story"><BookMarked className="inline h-4 w-4 mr-1" />Story</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <Textarea
+            placeholder={`Describe your post for a ${displayCategoryName} caption...`}
+            value={prompt}
+            onChange={e => { setPrompt(e.target.value); setPromptCharCount(e.target.value.length); }}
+            className="min-h-[100px] mb-2"
+          />
+          <div className="flex flex-wrap gap-4 mb-4">
+            <div className="flex-1 min-w-[180px]">
+              <Label>Style</Label>
+              <Select value={options.style} onValueChange={v => setOptions(o => ({ ...o, style: v }))}>
+                <SelectTrigger><SelectValue placeholder="Select style" /></SelectTrigger>
+                <SelectContent>{styleOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="flex-1 min-w-[180px]">
+              <Label>Tone</Label>
+              <Select value={options.tone} onValueChange={v => setOptions(o => ({ ...o, tone: v }))}>
+                <SelectTrigger><SelectValue placeholder="Select tone" /></SelectTrigger>
+                <SelectContent>{toneOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="flex-1 min-w-[180px]">
+              <Label>Length</Label>
+              <Slider value={[options.length]} onValueChange={([v]) => setOptions(o => ({ ...o, length: v }))} min={50} max={300} step={10} />
+            </div>
+            <div className="flex-1 min-w-[180px]">
+              <Label>Creativity</Label>
+              <Slider value={[options.creativity * 100]} onValueChange={([v]) => setOptions(o => ({ ...o, creativity: v / 100 }))} min={0} max={100} step={10} />
+            </div>
+          </div>
+          <div className="flex items-center gap-4 mb-4">
+            <Switch checked={options.includeHashtags} onCheckedChange={v => setOptions(o => ({ ...o, includeHashtags: v }))} />
+            <Label>Include Hashtags</Label>
+            <Switch checked={options.includeEmojis} onCheckedChange={v => setOptions(o => ({ ...o, includeEmojis: v }))} />
+            <Label>Include Emojis</Label>
+          </div>
+          <Button size="lg" onClick={handleGenerate} disabled={isGenerating || !prompt.trim()} className="bg-gradient-to-r from-primary to-pink-500 text-white px-8 mb-4 shadow-lg hover:scale-105 transition-transform">
+            {isGenerating ? (<><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating...</>) : "Generate Caption"}
+          </Button>
+          {/* Progress Bar */}
+          {isGenerating && (
+            <div className="w-full h-2 bg-muted rounded-full overflow-hidden mb-4">
+              <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }} className="h-full bg-gradient-to-r from-primary to-pink-500" />
+            </div>
+          )}
+          {/* Copy All Button */}
+          {generatedCaptions.length > 1 && !isGenerating && (
+            <div className="flex justify-end mb-2">
+              <Button variant="outline" size="sm" onClick={() => navigator.clipboard.writeText(generatedCaptions.join('\n\n'))} className="gap-2">
+                <Copy className="h-4 w-4" /> Copy All
               </Button>
             </div>
-            <AnimatePresence>
-              {generatedCaptions.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="mt-6 grid gap-4"
-                >
-                  {generatedCaptions.map((caption, idx) => (
-                    <div
-                      key={idx}
-                      className="relative p-6 rounded-lg bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 border border-primary/10"
-                    >
-                      <div className="absolute top-4 right-4 flex items-center gap-2">
+          )}
+          <AnimatePresence>
+            {generatedCaptions.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="mt-6 grid gap-4">
+                {generatedCaptions.map((caption, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: idx * 0.07 }}
+                    className="relative p-6 rounded-2xl bg-gradient-to-br from-primary/10 via-pink-500/10 to-blue-500/10 border border-primary/20 shadow-lg hover:shadow-xl transition-shadow"
+                  >
+                    <div className="absolute top-4 right-4 flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigator.clipboard.writeText(caption)}
+                        className="h-8 w-8 p-0"
+                        aria-label="Copy caption"
+                      >
+                        <Copy className="h-4 w-4 text-primary" />
+                      </Button>
+                      <Button
+                        variant={favorites.includes(idx) ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => toggleFavorite(idx)}
+                        className="h-8 w-8 p-0"
+                        aria-label={favorites.includes(idx) ? "Remove from favorites" : "Add to favorites"}
+                      >
+                        {favorites.includes(idx) ? <Heart className="h-4 w-4 text-pink-500" /> : <HeartOff className="h-4 w-4 text-muted-foreground" />}
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      <h3 className="font-medium text-lg">Generated Caption {idx + 1}</h3>
+                    </div>
+                    <div className="prose prose-sm max-w-none mb-2"><p className="text-base leading-relaxed text-foreground/90">{caption}</p></div>
+                    {/* Hashtag Preview */}
+                    {caption.match(/#[\w]+/g) && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <Hash className="h-4 w-4 text-primary" />
+                        <span className="text-sm text-muted-foreground truncate max-w-xs">
+                          {caption.match(/#[\w]+/g)?.join(' ')}
+                        </span>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleCopy(caption)}
+                          onClick={() => navigator.clipboard.writeText(caption.match(/#[\w]+/g)?.join(' ') || '')}
                           className="h-8 w-8 p-0"
+                          aria-label="Copy hashtags"
                         >
-                          {isCopied ? (
-                            <Check className="h-4 w-4 text-green-500" />
-                          ) : (
-                            <Copy className="h-4 w-4 text-primary" />
-                          )}
+                          <Copy className="h-4 w-4 text-primary" />
                         </Button>
                       </div>
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="h-5 w-5 text-primary" />
-                          <h3 className="font-medium text-lg">Generated Caption {idx + 1}</h3>
-                        </div>
-                        <div className="prose prose-sm max-w-none">
-                          <p className="text-base leading-relaxed text-foreground/90">
-                            {caption.split('\n').map((line, i) => (
-                              <span key={i}>
-                                {line}
-                                <br />
-                              </span>
-                            ))}
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground pt-4 border-t">
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4" />
-                            <span>{caption.length} characters</span>
-                          </div>
-                          <span>AI Generated</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 mb-2 rounded-lg bg-destructive/10 text-destructive flex items-center gap-2"
-              >
-                <Info className="h-4 w-4" />
-                <span className="text-sm">{error}</span>
+                    )}
+                  </motion.div>
+                ))}
               </motion.div>
             )}
+          </AnimatePresence>
+        </section>
+        {/* How to Use Section */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Info className="h-5 w-5 text-primary" /> How to Use</h2>
+          <p className="text-muted-foreground mb-6 text-center max-w-2xl mx-auto">Follow these simple steps to get the most out of the captions generator. It's fast, free, and designed for everyone!</p>
+          {/* Mobile: vertical stepper, Desktop: horizontal stepper */}
+          <div className="flex flex-col sm:flex-row items-stretch justify-center gap-6 sm:gap-6 relative">
+            {howToSteps.map((step, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className={`relative flex flex-row sm:flex-col items-center sm:items-center text-left sm:text-center bg-gradient-to-br from-primary/5 via-pink-500/5 to-blue-500/5 border shadow-md rounded-2xl p-4 sm:p-6 w-full sm:w-64 min-h-[120px] sm:min-h-[220px] mx-auto`}
+                tabIndex={0}
+                aria-label={`Step ${i + 1}: ${step.title}`}
+              >
+                {/* Stepper line for mobile */}
+                {i !== howToSteps.length - 1 && (
+                  <div className="hidden sm:block absolute left-1/2 top-full w-1 h-6 bg-primary/20" style={{ transform: 'translateX(-50%)' }} />
+                )}
+                {i !== howToSteps.length - 1 && (
+                  <div className="block sm:hidden absolute left-8 top-full w-0.5 h-8 bg-primary/20" />
+                )}
+                {/* Number badge with animation */}
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0.7 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="flex-shrink-0 z-20 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg border-4 border-background mr-4 sm:mr-0 sm:mb-4"
+                  style={{ minWidth: 48, minHeight: 48 }}
+                >
+                  {i + 1}
+                </motion.div>
+                <div className="flex-1 flex flex-col items-start sm:items-center">
+                  <div className="mb-2 sm:mb-2 mt-0 sm:mt-2">{step.icon}</div>
+                  <h3 className="font-semibold mb-1 text-base sm:text-lg mt-0 sm:mt-2">{step.title}</h3>
+                  <p className="text-muted-foreground text-xs sm:text-sm leading-snug sm:leading-normal">{step.desc}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
-        </motion.div>
+        </section>
+        {/* FAQ Section */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Info className="h-5 w-5 text-primary" /> FAQ</h2>
+          <p className="text-muted-foreground mb-6 text-center max-w-2xl mx-auto">Find answers to the most common questions about using the captions generator. Still have questions? Contact us anytime!</p>
+          <div className="space-y-3 sm:space-y-4 bg-gradient-to-br from-primary/5 via-pink-500/5 to-blue-500/5 rounded-2xl p-2 sm:p-8">
+            {faqs.map((item, i) => (
+              <FAQItem key={i} {...item} />
+            ))}
+          </div>
+        </section>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -589,5 +710,41 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
         )}
       </div>
     </div>
+  );
+}
+
+function FAQItem({ q, a, icon }: { q: string; a: string; icon: React.ReactNode }) {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <motion.div
+      initial={{ borderRadius: 16 }}
+      animate={{ borderRadius: open ? 24 : 16 }}
+      className={`border bg-background/70 rounded-xl shadow-sm overflow-hidden transition-all group hover:shadow-lg hover:border-primary/40`}
+    >
+      <button
+        className="w-full flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4 text-left focus:outline-none focus:ring-2 focus:ring-primary/30 group-hover:bg-primary/5 transition-colors"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-label={`FAQ: ${q}`}
+        tabIndex={0}
+        style={{ minHeight: 56 }}
+      >
+        <span className="flex items-center gap-2 sm:gap-3 font-semibold text-sm sm:text-base">{icon}{q}</span>
+        <ChevronDown className={`h-6 w-6 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="px-3 sm:px-4 pb-4 pt-2 bg-primary/5 text-black text-sm sm:text-base rounded-b-xl"
+          >
+            {a}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 } 

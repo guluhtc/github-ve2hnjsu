@@ -124,7 +124,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 sm:mb-6 leading-tight"
+          className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-4 sm:mb-6 leading-tight"
         >
           <motion.span
             initial={{ rotate: 0 }}
@@ -132,7 +132,7 @@ export default function HeroSection() {
             transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
             className="inline-block align-middle mr-3"
           >
-            <Brain className="w-10 h-10 text-primary drop-shadow-lg" />
+            <Brain className="w-12 h-12 text-primary drop-shadow-lg" />
           </motion.span>
           <motion.span
             className="gradient-text relative inline-block"
@@ -165,9 +165,9 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="max-w-[340px] xs:max-w-[420px] sm:max-w-[700px] text-sm xs:text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10"
+          className="max-w-[340px] xs:max-w-[420px] sm:max-w-[700px] text-base xs:text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 sm:mb-10 font-medium"
         >
-          Access powerful, free AI tools to enhance your Instagram content, grow your audience, and save time with automated solutions.
+          Instantly generate viral captions, trending hashtags, and pro bios. Grow your Instagram with free, AI-powered tools trusted by creators worldwide.
         </motion.p>
 
         <motion.div

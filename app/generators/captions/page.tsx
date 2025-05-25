@@ -83,6 +83,15 @@ export default function CaptionsPage() {
   });
   const [visibleCount, setVisibleCount] = useState(35);
   const [visibleCategories, setVisibleCategories] = useState(35);
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  const examplePrompts = [
+    "A cozy coffee shop morning with friends",
+    "Hiking adventure in the mountains",
+    "Celebrating a birthday at the beach",
+    "My new puppy's first day home",
+    "A rainy day reading by the window"
+  ];
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -160,11 +169,42 @@ export default function CaptionsPage() {
     }
   };
 
+  const handleCopyAll = async () => {
+    try {
+      await navigator.clipboard.writeText(generatedCaptions.join('\n\n'));
+      toast.success("All captions copied to clipboard!");
+    } catch (err) {
+      toast.error("Failed to copy all captions");
+    }
+  };
+
+  const handleCopyHashtags = async (caption: string) => {
+    const hashtags = caption.match(/#[\w]+/g)?.join(' ');
+    if (hashtags) {
+      try {
+        await navigator.clipboard.writeText(hashtags);
+        toast.success("Hashtags copied to clipboard!");
+      } catch (err) {
+        toast.error("Failed to copy hashtags");
+      }
+    } else {
+      toast.error("No hashtags found in this caption");
+    }
+  };
+
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
     if (!isFavorite) {
       toast.success("Added to favorites!");
     }
+  };
+
+  const toggleFavoriteCaption = (caption: string) => {
+    setFavorites((prev) =>
+      prev.includes(caption)
+        ? prev.filter((c) => c !== caption)
+        : [...prev, caption]
+    );
   };
 
   const regenerateCaption = () => {
@@ -368,6 +408,20 @@ export default function CaptionsPage() {
                 </div>
               </div>
 
+              {/* Example Prompts */}
+              <div className="flex flex-wrap gap-2 justify-center mb-6">
+                {examplePrompts.map((ex, i) => (
+                  <button
+                    key={i}
+                    className="px-3 py-1 rounded-full bg-muted/60 hover:bg-primary/10 text-sm text-muted-foreground border border-muted-foreground/20 transition-colors"
+                    onClick={() => setPrompt(ex)}
+                    type="button"
+                  >
+                    {ex}
+                  </button>
+                ))}
+              </div>
+
               {/* Error Display */}
               {error && (
                 <motion.div
@@ -397,10 +451,23 @@ export default function CaptionsPage() {
                     exit={{ opacity: 0, y: -20 }}
                     className="mt-6 grid gap-4"
                   >
+                    <div className="flex justify-end mb-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyAll}
+                        className="gap-2"
+                      >
+                        <Copy className="h-4 w-4" /> Copy All
+                      </Button>
+                    </div>
                     {generatedCaptions.slice(0, visibleCount).map((caption, idx) => (
-                      <div
+                      <motion.div
                         key={idx}
-                        className="relative p-6 rounded-lg bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 border border-primary/10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: idx * 0.07 }}
+                        className={`relative p-6 rounded-lg bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 border border-primary/10 ${favorites.includes(caption) ? 'ring-2 ring-primary/60' : ''}`}
                       >
                         <div className="absolute top-4 right-4 flex items-center gap-2">
                           <Button
@@ -415,8 +482,17 @@ export default function CaptionsPage() {
                               <Copy className="h-4 w-4 text-primary" />
                             )}
                           </Button>
+                          <Button
+                            variant={favorites.includes(caption) ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => toggleFavoriteCaption(caption)}
+                            className="h-8 w-8 p-0"
+                            aria-label={favorites.includes(caption) ? "Remove from favorites" : "Add to favorites"}
+                          >
+                            {favorites.includes(caption) ? <Heart className="h-4 w-4 text-pink-500" /> : <HeartOff className="h-4 w-4 text-muted-foreground" />}
+                          </Button>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 mb-1">
                           <Sparkles className="h-5 w-5 text-primary" />
                           <h3 className="font-medium text-lg">Generated Caption {idx + 1}</h3>
                         </div>
@@ -430,14 +506,31 @@ export default function CaptionsPage() {
                             ))}
                           </p>
                         </div>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground pt-4 border-t">
+                        {/* Hashtag Preview */}
+                        {caption.match(/#[\w]+/g) && (
+                          <div className="flex items-center gap-2 mt-2">
+                            <Hash className="h-4 w-4 text-primary" />
+                            <span className="text-sm text-muted-foreground truncate max-w-xs">
+                              {caption.match(/#[\w]+/g)?.join(' ')}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleCopyHashtags(caption)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Copy className="h-4 w-4 text-primary" />
+                            </Button>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between text-sm text-muted-foreground pt-4 border-t mt-4">
                           <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4" />
                             <span>{caption.length} characters</span>
                           </div>
                           <span>AI Generated</span>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                     {visibleCount < generatedCaptions.length && (
                       <div className="flex justify-center mt-4">

@@ -197,25 +197,11 @@ export default function ToolsSection() {
   };
 
   return (
-    <section id="tools" className="py-12 sm:py-20 tools-gradient">
+    <section id="tools" className="py-16 sm:py-24 tools-gradient">
       <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center text-center mb-8 sm:mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <Badge variant="outline" className="mb-3 sm:mb-4 gradient-border">
-              Tools
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">
-              Discover Our <span className="gradient-text">Instagram AI Tools</span>
-            </h2>
-            <p className="text-sm sm:text-base text-muted-foreground max-w-[700px]">
-              Browse our collection of free AI-powered tools designed to enhance your Instagram presence.
-            </p>
-          </motion.div>
+        <div className="flex flex-col items-center text-center mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">Explore Our Free Instagram Tools</h2>
+          <p className="text-muted-foreground max-w-2xl text-lg mb-2">Boost your Instagram with AI-powered generators, analyzers, planners, and more. Find the perfect tool for your needs below.</p>
         </div>
 
         <motion.div
