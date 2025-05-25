@@ -499,7 +499,7 @@ export default function ClientPage({ categoryData }: { categoryData: { category:
         {/* How to Use Section */}
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Info className="h-5 w-5 text-primary" /> How to Use</h2>
-          <p className="text-muted-foreground mb-6 text-center max-w-2xl mx-auto">Follow these simple steps to get the most out of the captions generator. It's fast, free, and designed for everyone!</p>
+          <p className="text-muted-foreground mb-2">Get the most out of the captions generator. It&apos;s fast, free, and designed for everyone!</p>
           {/* Mobile: vertical stepper, Desktop: horizontal stepper */}
           <div className="flex flex-col sm:flex-row items-stretch justify-center gap-6 sm:gap-6 relative">
             {howToSteps.map((step, i) => (
