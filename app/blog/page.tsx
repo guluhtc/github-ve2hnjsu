@@ -83,6 +83,12 @@ const BlogPage: React.FC = () => {
         slug="Digital-Tools-That-Simplify-Complex-Business-Processes"
         onClick={() => {}}
       />
+      <BlogPost
+        title="7 Awesome Virtual Reality Tours to Try in 2023"
+        content="It was just a few years ago that COVID-19 severely limited our every move. In some regions, the travel industry is still recovering from the financial shock. This caused virtual tourism to explode seemingly overnight. In fact, the virtual reality travel industry is projected to surpass $24 billion in value by 2027. And today, you can choose from a vast range of travel experiences to enjoy mysterious cultures, colorful wildlife, and the warm embrace of locals from the comfort of your home. Here are 7 awesome digital travel experiences you can enjoy."
+        slug="Awesome-Virtual-Reality-Tours-to-Try-in"
+        onClick={() => {}}
+      />
     </div>
   );
 };
